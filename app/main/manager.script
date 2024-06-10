@@ -1,0 +1,52 @@
+local ____lualib = require("lualib_bundle")
+local __TS__StringIncludes = ____lualib.__TS__StringIncludes
+local ____exports = {}
+local druid = require("druid.druid")
+local default_style = require("druid.styles.default.style")
+local ____Ads = require("modules.Ads")
+local BannerPos = ____Ads.BannerPos
+local ____Manager = require("modules.Manager")
+local register_manager = ____Manager.register_manager
+function ____exports.init(self)
+    msg.post(".", "acquire_input_focus")
+    register_manager()
+    Manager.init(
+        function()
+            EventBus.on(
+                "ON_SCENE_LOADED",
+                function(message)
+                    local name = message.name
+                    local ____window_set_dim_mode_1 = window.set_dim_mode
+                    local ____name_includes_result_0
+                    if __TS__StringIncludes(name, "game") then
+                        ____name_includes_result_0 = window.DIMMING_OFF
+                    else
+                        ____name_includes_result_0 = window.DIMMING_ON
+                    end
+                    ____window_set_dim_mode_1(____name_includes_result_0)
+                    if message.name == "game" then
+                        Ads.show_banner(BannerPos.POS_BOTTOM_CENTER)
+                    else
+                        Ads.hide_banner()
+                    end
+                end
+            )
+            if System.platform == "HTML5" and HtmlBridge.get_platform() == "ok" then
+                HtmlBridge.start_resize_monitor()
+            end
+            default_style.scroll.WHEEL_SCROLL_SPEED = 10
+            druid.set_default_style(default_style)
+            Sound.attach_druid_click("sel")
+            Camera.set_go_prjection(-1, 1)
+            Scene.load("menu")
+            Scene.set_bg("#999")
+        end,
+        true
+    )
+end
+function ____exports.on_message(self, message_id, _message, sender)
+    Manager.on_message_main(self, message_id, _message, sender)
+end
+init = ____exports.init
+on_message = ____exports.on_message
+

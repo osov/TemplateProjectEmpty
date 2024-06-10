@@ -1,0 +1,84 @@
+local ____exports = {}
+local druid = require("druid.druid")
+local checkbox = require("druid.extended.checkbox")
+local ____game_config = require("main.game_config")
+local ADS_CONFIG = ____game_config.ADS_CONFIG
+local ____utils = require("utils.utils")
+local show_gui_list = ____utils.show_gui_list
+local hide_gui_list = ____utils.hide_gui_list
+local set_text = ____utils.set_text
+function ____exports.init(self)
+    Manager.init_script()
+    druid.register("checkbox", checkbox)
+    self.druid = druid.new(self)
+    if System.platform == "iPhone OS" then
+        set_text(
+            "privacy",
+            Lang.get_lang() == "ru" and "Политика конфиденциальности" or "Privacy Policy"
+        )
+        self.druid:new_button(
+            "btnPrivacy",
+            function() return sys.open_url(Lang.get_lang() == "ru" and "https://sb-games.ru/policy-ru.html" or "https://sb-games.ru/policy.html") end
+        )
+    else
+        hide_gui_list({"btnPrivacy"})
+    end
+    if Ads.is_share_supported() then
+        self.druid:new_button(
+            "btnShare",
+            function() return Ads.social_share() end
+        )
+    else
+        hide_gui_list({"btnShare"})
+    end
+    if ADS_CONFIG.is_mediation and System.platform ~= "HTML5" and Lang.is_gdpr() then
+        log("check request GDPR")
+        local gdpr = Storage.get_int("gdpr", -1)
+        if gdpr == -1 then
+            log("request GDPR")
+            local is_checked = true
+            show_gui_list({"gdpr_block"})
+            self.druid:new_blocker("gdpr_block")
+            self.druid:new_button(
+                "gdpr_url",
+                function() return sys.open_url(Lang.get_lang() == "ru" and "https://sb-games.ru/policy-ru.html" or "https://sb-games.ru/policy.html") end
+            )
+            self.druid:new_checkbox(
+                "gdpr_check_box",
+                function(_, val)
+                    is_checked = val
+                    return is_checked
+                end,
+                "gdrp_is_readed",
+                is_checked
+            )
+            self.druid:new_button(
+                "btnGdprOk",
+                function()
+                    hide_gui_list({"gdpr_block"})
+                    Storage.set("gdpr", is_checked and 1 or 0)
+                    yandexads.set_user_consent(is_checked)
+                end
+            )
+        end
+    end
+end
+function ____exports.on_input(self, action_id, action)
+    return self.druid:on_input(action_id, action)
+end
+function ____exports.update(self, dt)
+    self.druid:update(dt)
+end
+function ____exports.on_message(self, message_id, message, sender)
+    self.druid:on_message(message_id, message, sender)
+end
+function ____exports.final(self)
+    Manager.final_script()
+    self.druid:final()
+end
+init = ____exports.init
+on_input = ____exports.on_input
+update = ____exports.update
+on_message = ____exports.on_message
+final = ____exports.final
+

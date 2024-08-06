@@ -135,9 +135,11 @@ function ManagerModule() {
     }
 
     function on_message_main(_this: any, message_id: hash, message: any, sender: hash) {
-        Scene._on_message(_this, message_id, message, sender);
-        Sound._on_message(_this, message_id, message, sender);
-        Rate._on_message(_this, message_id, message, sender);
+    	if (_is_ready){
+        	Scene._on_message(_this, message_id, message, sender);
+        	Sound._on_message(_this, message_id, message, sender);
+        	Rate._on_message(_this, message_id, message, sender);
+    	}
     }
 
     // можно вызывать в каждом init всех gui/go чтобы применялись языки например

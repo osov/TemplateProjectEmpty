@@ -139,7 +139,8 @@
 		var load_bar = document.createElement("div");
 		load_bar.classList.add('load');
 		document.body.appendChild(load_bar);
-		ProgressUpdater.addListener(function(p){if (p >= 100) document.body.removeChild(load_bar);});
+		var is_del = false;
+		ProgressUpdater.addListener(function(p){if (p >= 100 && !is_del) {is_del = true;document.body.removeChild(load_bar);}});
 	</script>
 </body>
 </html>

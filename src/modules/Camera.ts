@@ -76,7 +76,7 @@ function CameraModule() {
     function set_width_range(value: number) {
         _game_width = value;
         WINDOW_WIDTH = 1;
-        update_window_size();
+        update_window_size(false);
     }
 
     function get_width_range() {
@@ -97,7 +97,7 @@ function CameraModule() {
         _view_matrix = view;
     }
 
-    function update_window_size() {
+    function update_window_size(is_trigger_event = true) {
         const [width, height] = window.get_size();
         if (width == 0 || height == 0)
             return;
@@ -105,7 +105,8 @@ function CameraModule() {
             return;
         WINDOW_WIDTH = width;
         WINDOW_HEIGHT = height;
-        EventBus.trigger('SYS_ON_RESIZED', { width, height }, false);
+        if (is_trigger_event)
+        	EventBus.trigger('SYS_ON_RESIZED', { width, height }, false);
     }
 
     function set_window_scaling_factor(scaling_factor: number) {

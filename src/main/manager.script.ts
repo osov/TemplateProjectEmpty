@@ -36,7 +36,8 @@ export function init(this: props) {
         druid.set_default_style(default_style);
         Sound.attach_druid_click('sel');
         Camera.set_go_prjection(-1, 1);
-
+        if (System.platform == 'HTML5')
+            HtmlBridge.game_ready();
         Scene.load('menu');
         Scene.set_bg('#999');
     }, true);

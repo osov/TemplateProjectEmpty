@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -22,16 +21,19 @@ function CameraModule() {
     const DISPLAY_WIDTH = tonumber(sys.get_config("display.width"))!;
     const DISPLAY_HEIGHT = tonumber(sys.get_config("display.height"))!;
     const HIGH_DPI = tonumber(sys.get_config("display.high_dpi"));
+    const dpi_ratio = 1;
+
     let WINDOW_WIDTH = DISPLAY_WIDTH;
     let WINDOW_HEIGHT = DISPLAY_HEIGHT;
-    let dpi_ratio = 1;
     let _view_matrix = vmath.matrix4();
     let anchor_x = 0;
     let anchor_y = 0;
     let _near = -1;
     let _far = 1;
     let _zoom = 1;
-    let _game_width = DISPLAY_WIDTH;
+    let is_auto_zoom = false;
+    let _dynamic_orientation = false;
+
 
     function init() {
         update_window_size();
@@ -45,6 +47,7 @@ function CameraModule() {
                 update_window_size();
             }
         });
+
     }
 
     function set_gui_projection(value: boolean) {
@@ -73,17 +76,6 @@ function CameraModule() {
         update_window_size();
     }
 
-    function set_width_range(value: number) {
-        _game_width = value;
-        WINDOW_WIDTH = 1;
-        update_window_size(false);
-    }
-
-    function get_width_range() {
-        return _game_width;
-    }
-
-
     function get_zoom() {
         return _zoom;
     }
@@ -97,39 +89,47 @@ function CameraModule() {
         _view_matrix = view;
     }
 
-    function update_window_size(is_trigger_event = true) {
+    function update_window_size(is_trigger_event = true, is_force = false) {
         const [width, height] = window.get_size();
         if (width == 0 || height == 0)
             return;
-        if (width == WINDOW_WIDTH && height == WINDOW_HEIGHT)
+        if (!is_force && width == WINDOW_WIDTH && height == WINDOW_HEIGHT)
             return;
         WINDOW_WIDTH = width;
         WINDOW_HEIGHT = height;
+        update_auto_zoom(width, height);
         if (is_trigger_event)
-        	EventBus.trigger('SYS_ON_RESIZED', { width, height }, false);
+            EventBus.trigger('SYS_ON_RESIZED', { width, height }, false);
     }
 
-    function set_window_scaling_factor(scaling_factor: number) {
-        if (HIGH_DPI)
-            dpi_ratio = 1 / scaling_factor;
-        else
-            dpi_ratio = 1;
+    function get_width_height() {
+        if (_dynamic_orientation) {
+            const is_portrait = DISPLAY_WIDTH < DISPLAY_HEIGHT;
+            const cur_is_portrait = WINDOW_WIDTH < WINDOW_HEIGHT;
+            if (is_portrait != cur_is_portrait)
+                return [DISPLAY_HEIGHT, DISPLAY_WIDTH];
+        }
+
+        return [DISPLAY_WIDTH, DISPLAY_HEIGHT];
     }
 
     function width_viewport() {
-        let w = _game_width / get_zoom();
-        let h = WINDOW_HEIGHT / WINDOW_WIDTH * w;
+        const [dw, dh] = get_width_height();
+
+        const w = dw / get_zoom();
+        const h = WINDOW_HEIGHT / WINDOW_WIDTH * w;
 
         let left = -w / 2;
         let right = w / 2;
         let bottom = -h / 2;
         let top = h / 2;
 
-        const left_x = (DISPLAY_WIDTH - w) / 2;
+        const left_x = (dw - w) / 2;
+        const top_y = (dh - h) / 2;
         // ----
         if (anchor_y == 1) {
             bottom = -h;
-            top = 0;
+            top = -top_y * 0; // center Y
         }
 
         if (anchor_y == -1) {
@@ -229,7 +229,35 @@ function CameraModule() {
         const [tl_x, tl_y] = unproject_xyz(inv, 0, DISPLAY_HEIGHT, 0);
         return vmath.vector4(bl_x, tl_y, br_x, bl_y);
     }
+
+    function update_auto_zoom(width: number, height: number) {
+        const [dw, dh] = get_width_height();
+        if (!is_auto_zoom)
+            return;
+        const window_aspect = width / height;
+        const aspect = dw / dh;
+        let zoom = 1;
+        if (window_aspect >= aspect) {
+            const height = dw / window_aspect;
+            zoom = height / dh;
+        }
+        set_zoom(zoom);
+    }
+
+    function set_auto_zoom(active: boolean) {
+        is_auto_zoom = active;
+    }
+
+    function set_dynamic_orientation(active: boolean) {
+        _dynamic_orientation = active;
+        update_window_size(true, true);
+    }
+
+    function is_dynamic_orientation() {
+        return _dynamic_orientation;
+    }
+
     init();
 
-    return { set_gui_projection, transform_input_action, set_go_prjection, get_ltrb, screen_to_world, window_to_world, get_zoom, set_zoom, set_view, world_to_window, width_projection, set_width_range, get_width_range };
+    return { set_gui_projection, transform_input_action, set_go_prjection, get_ltrb, screen_to_world, window_to_world, get_zoom, set_zoom, set_view, world_to_window, width_projection, set_auto_zoom, set_dynamic_orientation, is_dynamic_orientation };
 }

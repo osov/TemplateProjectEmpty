@@ -132,9 +132,11 @@ function ManagerModule()
         EventBus.on_message(_this, message_id, message, sender)
     end
     local function on_message_main(_this, message_id, message, sender)
-        Scene._on_message(_this, message_id, message, sender)
-        Sound._on_message(_this, message_id, message, sender)
-        Rate._on_message(_this, message_id, message, sender)
+        if _is_ready then
+            Scene._on_message(_this, message_id, message, sender)
+            Sound._on_message(_this, message_id, message, sender)
+            Rate._on_message(_this, message_id, message, sender)
+        end
     end
     local function init_script()
         Lang.apply()

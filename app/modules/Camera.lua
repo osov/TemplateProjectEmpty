@@ -1,33 +1,58 @@
 local ____exports = {}
 local CameraModule
 function CameraModule()
-    local get_zoom, update_window_size, width_viewport, width_projection, get_viewport, unproject_xyz, unproject, screen_to_world, project, v4_tmp, DISPLAY_WIDTH, DISPLAY_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, _view_matrix, anchor_x, anchor_y, _near, _far, _zoom, _game_width
+    local get_zoom, set_zoom, update_window_size, get_width_height, width_viewport, width_projection, get_viewport, unproject_xyz, unproject, screen_to_world, project, update_auto_zoom, v4_tmp, DISPLAY_WIDTH, DISPLAY_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, _view_matrix, anchor_x, anchor_y, _near, _far, _zoom, is_auto_zoom, _dynamic_orientation
     function get_zoom()
         return _zoom
     end
-    function update_window_size()
+    function set_zoom(zoom)
+        _zoom = zoom
+        msg.post("@render:", "set_zoom", {zoom = zoom})
+    end
+    function update_window_size(is_trigger_event, is_force)
+        if is_trigger_event == nil then
+            is_trigger_event = true
+        end
+        if is_force == nil then
+            is_force = false
+        end
         local width, height = window.get_size()
         if width == 0 or height == 0 then
             return
         end
-        if width == WINDOW_WIDTH and height == WINDOW_HEIGHT then
+        if not is_force and width == WINDOW_WIDTH and height == WINDOW_HEIGHT then
             return
         end
         WINDOW_WIDTH = width
         WINDOW_HEIGHT = height
-        EventBus.trigger("SYS_ON_RESIZED", {width = width, height = height}, false)
+        update_auto_zoom(width, height)
+        if is_trigger_event then
+            EventBus.trigger("SYS_ON_RESIZED", {width = width, height = height}, false)
+        end
+    end
+    function get_width_height()
+        if _dynamic_orientation then
+            local is_portrait = DISPLAY_WIDTH < DISPLAY_HEIGHT
+            local cur_is_portrait = WINDOW_WIDTH < WINDOW_HEIGHT
+            if is_portrait ~= cur_is_portrait then
+                return {DISPLAY_HEIGHT, DISPLAY_WIDTH}
+            end
+        end
+        return {DISPLAY_WIDTH, DISPLAY_HEIGHT}
     end
     function width_viewport()
-        local w = _game_width / get_zoom()
+        local dw, dh = unpack(get_width_height())
+        local w = dw / get_zoom()
         local h = WINDOW_HEIGHT / WINDOW_WIDTH * w
         local left = -w / 2
         local right = w / 2
         local bottom = -h / 2
         local top = h / 2
-        local left_x = (DISPLAY_WIDTH - w) / 2
+        local left_x = (dw - w) / 2
+        local top_y = (dh - h) / 2
         if anchor_y == 1 then
             bottom = -h
-            top = 0
+            top = -top_y * 0
         end
         if anchor_y == -1 then
             bottom = 0
@@ -116,21 +141,36 @@ function CameraModule()
         world.z = (v4.z + 0) / 2
         return world
     end
+    function update_auto_zoom(width, height)
+        local dw, dh = unpack(get_width_height())
+        if not is_auto_zoom then
+            return
+        end
+        local window_aspect = width / height
+        local aspect = dw / dh
+        local zoom = 1
+        if window_aspect >= aspect then
+            local height = dw / window_aspect
+            zoom = height / dh
+        end
+        set_zoom(zoom)
+    end
     local is_gui_projection = false
     v4_tmp = vmath.vector4()
     DISPLAY_WIDTH = tonumber(sys.get_config("display.width"))
     DISPLAY_HEIGHT = tonumber(sys.get_config("display.height"))
     local HIGH_DPI = tonumber(sys.get_config("display.high_dpi"))
+    local dpi_ratio = 1
     WINDOW_WIDTH = DISPLAY_WIDTH
     WINDOW_HEIGHT = DISPLAY_HEIGHT
-    local dpi_ratio = 1
     _view_matrix = vmath.matrix4()
     anchor_x = 0
     anchor_y = 0
     _near = -1
     _far = 1
     _zoom = 1
-    _game_width = DISPLAY_WIDTH
+    is_auto_zoom = false
+    _dynamic_orientation = false
     local function init()
         update_window_size()
         local last_window_x = 0
@@ -176,27 +216,8 @@ function CameraModule()
         msg.post("@render:", "use_width_projection", {anchor_x = anchor_x, anchor_y = anchor_y, near = near, far = far})
         update_window_size()
     end
-    local function set_width_range(value)
-        _game_width = value
-        WINDOW_WIDTH = 1
-        update_window_size()
-    end
-    local function get_width_range()
-        return _game_width
-    end
-    local function set_zoom(zoom)
-        _zoom = zoom
-        msg.post("@render:", "set_zoom", {zoom = zoom})
-    end
     local function set_view(view)
         _view_matrix = view
-    end
-    local function set_window_scaling_factor(scaling_factor)
-        if HIGH_DPI then
-            dpi_ratio = 1 / scaling_factor
-        else
-            dpi_ratio = 1
-        end
     end
     local function window_to_world(screen_x, screen_y)
         local viewport = get_viewport()
@@ -232,6 +253,16 @@ function CameraModule()
         local tl_x, tl_y = unpack(unproject_xyz(inv, 0, DISPLAY_HEIGHT, 0))
         return vmath.vector4(bl_x, tl_y, br_x, bl_y)
     end
+    local function set_auto_zoom(active)
+        is_auto_zoom = active
+    end
+    local function set_dynamic_orientation(active)
+        _dynamic_orientation = active
+        update_window_size(true, true)
+    end
+    local function is_dynamic_orientation()
+        return _dynamic_orientation
+    end
     init()
     return {
         set_gui_projection = set_gui_projection,
@@ -245,8 +276,9 @@ function CameraModule()
         set_view = set_view,
         world_to_window = world_to_window,
         width_projection = width_projection,
-        set_width_range = set_width_range,
-        get_width_range = get_width_range
+        set_auto_zoom = set_auto_zoom,
+        set_dynamic_orientation = set_dynamic_orientation,
+        is_dynamic_orientation = is_dynamic_orientation
     }
 end
 function ____exports.register_camera()

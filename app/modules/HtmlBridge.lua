@@ -111,6 +111,9 @@ function HtmlBridgeModule()
     local function open_url(url)
         js.call_js("window.open", url, "_blank")
     end
+    local function game_ready()
+        js.call_js("sdk.game_ready")
+    end
     return {
         init = init,
         get_data_from_storage = get_data_from_storage,
@@ -144,7 +147,8 @@ function HtmlBridgeModule()
         set_leaderboard_score = set_leaderboard_score,
         get_leaderboard_score = get_leaderboard_score,
         get_leaderboard_entries = get_leaderboard_entries,
-        open_url = open_url
+        open_url = open_url,
+        game_ready = game_ready
     }
 end
 function ____exports.register_html_bridge()

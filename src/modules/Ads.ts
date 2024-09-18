@@ -332,12 +332,18 @@ function AdsModule() {
         is_real_reward = val;
     }
 
+   function set_ads_interval(time: number) {
+        ADS_CONFIG.ads_interval = time;
+        last_view_ads = System.now() - (ADS_CONFIG.ads_interval - ADS_CONFIG.ads_delay);
+    }
+
+
     init();
 
     return {
         is_ready, get_social_platform, player_init, leaderboards_set_score, feedback_request_review,
         add_favorite, social_share, is_share_supported,
-        show_reward, show_interstitial, show_banner, hide_banner, is_favorite_supported, leaderboards_get_entitys, set_real_reward_mode, is_view_inter, is_allow_ads
+        show_reward, show_interstitial, show_banner, hide_banner, is_favorite_supported, leaderboards_get_entitys, set_real_reward_mode, is_view_inter, is_allow_ads,set_ads_interval
     };
 
 }

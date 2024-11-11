@@ -32,7 +32,7 @@ function MetricaModule() {
         if (appmetrica != null)
             appmetrica.report_event(event, json_data == '' ? '' : json.encode(json_data));
         if (yametrica != null)
-            yametrica.hit(event, json_data == '' ? {} : json_data);
+            yametrica.reach_goal(event, json_data == '' ? {} : json_data);
     }
 
     return { init, report };

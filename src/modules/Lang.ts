@@ -67,7 +67,8 @@ function LangModule() {
         return cur_lang;
     }
 
-    function get_text(code: keyof typeof lang_data) {
+    type SplitKeys<T extends string> = T extends `${infer first} ${infer last}` ? first extends string ? SplitKeys<last> : never : T;
+    function get_text(code: SplitKeys<keyof typeof lang_data>) {
         const data = langs_data[cur_lang];
         if (!data) {
             Log.warn('нет языкового набора:', cur_lang);

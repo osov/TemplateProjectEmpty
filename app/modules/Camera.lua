@@ -1,7 +1,7 @@
 local ____exports = {}
 local CameraModule
 function CameraModule()
-    local get_zoom, set_zoom, update_window_size, get_width_height, width_viewport, width_projection, get_viewport, unproject_xyz, unproject, screen_to_world, project, update_auto_zoom, v4_tmp, DISPLAY_WIDTH, DISPLAY_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, _view_matrix, anchor_x, anchor_y, _near, _far, _zoom, is_auto_zoom, _dynamic_orientation
+    local get_zoom, set_zoom, update_window_size, get_width_height, width_viewport, width_projection, get_viewport, unproject_xyz, unproject, screen_to_world, project, update_auto_zoom, v4_tmp, DISPLAY_WIDTH, DISPLAY_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, _view_matrix, anchor_x, anchor_y, _near, _far, _zoom, is_auto_zoom, _dynamic_orientation, GUI_ADJUST
     function get_zoom()
         return _zoom
     end
@@ -17,14 +17,25 @@ function CameraModule()
             is_force = false
         end
         local width, height = window.get_size()
-        if width == 0 or height == 0 then
-            return
-        end
-        if not is_force and width == WINDOW_WIDTH and height == WINDOW_HEIGHT then
-            return
-        end
         WINDOW_WIDTH = width
         WINDOW_HEIGHT = height
+        local sx = WINDOW_WIDTH / DISPLAY_WIDTH
+        local sy = WINDOW_HEIGHT / DISPLAY_HEIGHT
+        local adjust = GUI_ADJUST.ADJUST_FIT
+        local scale = math.min(sx, sy)
+        adjust.sx = scale * 1 / sx
+        adjust.sy = scale * 1 / sy
+        adjust.ox = (WINDOW_WIDTH - DISPLAY_WIDTH * scale) * 0.5 / scale
+        adjust.oy = (WINDOW_HEIGHT - DISPLAY_HEIGHT * scale) * 0.5 / scale
+        adjust = GUI_ADJUST.ADJUST_ZOOM
+        scale = math.max(sx, sy)
+        adjust.sx = scale * 1 / sx
+        adjust.sy = scale * 1 / sy
+        adjust.ox = (WINDOW_WIDTH - DISPLAY_WIDTH * scale) * 0.5 / scale
+        adjust.oy = (WINDOW_HEIGHT - DISPLAY_HEIGHT * scale) * 0.5 / scale
+        adjust = GUI_ADJUST.ADJUST_STRETCH
+        adjust.sx = 1
+        adjust.sy = 1
         update_auto_zoom(width, height)
         if is_trigger_event then
             EventBus.trigger("SYS_ON_RESIZED", {width = width, height = height}, false)
@@ -175,18 +186,17 @@ function CameraModule()
         update_window_size()
         local last_window_x = 0
         local last_window_y = 0
-        timer.delay(
-            0.1,
-            true,
-            function()
-                local window_x, window_y = window.get_size()
-                if last_window_x ~= window_x or last_window_y ~= window_y then
-                    last_window_x = window_x
-                    last_window_y = window_y
-                    update_window_size()
-                end
+        window.set_listener(function(____self, event)
+            if event ~= window.WINDOW_EVENT_RESIZED then
+                return
             end
-        )
+            local window_x, window_y = window.get_size()
+            if last_window_x ~= window_x or last_window_y ~= window_y then
+                last_window_x = window_x
+                last_window_y = window_y
+                update_window_size()
+            end
+        end)
     end
     local function set_gui_projection(value)
         is_gui_projection = value
@@ -246,11 +256,34 @@ function CameraModule()
         local scale_y = screen.y / (dpi_ratio * DISPLAY_HEIGHT / WINDOW_HEIGHT)
         return vmath.vector3(scale_x, scale_y, 0)
     end
-    local function get_ltrb()
+    GUI_ADJUST = {ADJUST_FIT = {sx = 1, sy = 1, ox = 0, oy = 0}, ADJUST_ZOOM = {sx = 1, sy = 1, ox = 0, oy = 0}, ADJUST_STRETCH = {sx = 1, sy = 1, ox = 0, oy = 0}}
+    local function world_to_screen(world, adjustMode)
+        local viewport = get_viewport()
+        local viewport_width = viewport.z * DISPLAY_WIDTH / WINDOW_WIDTH
+        local viewport_height = viewport.w * DISPLAY_HEIGHT / WINDOW_HEIGHT
+        local viewport_left = viewport.x * DISPLAY_WIDTH / WINDOW_WIDTH
+        local viewport_bottom = viewport.y * DISPLAY_HEIGHT / WINDOW_HEIGHT
+        local screen = project(
+            _view_matrix,
+            width_projection(),
+            vmath.vector3(world)
+        )
+        screen.x = viewport_left + screen.x * (viewport_width / DISPLAY_WIDTH)
+        screen.y = viewport_bottom + screen.y * (viewport_height / DISPLAY_HEIGHT)
+        if adjustMode then
+            screen.x = screen.x / GUI_ADJUST[adjustMode].sx - GUI_ADJUST[adjustMode].ox
+            screen.y = screen.y / GUI_ADJUST[adjustMode].sy - GUI_ADJUST[adjustMode].oy
+        end
+        return vmath.vector3(screen.x, screen.y, screen.z)
+    end
+    local function get_ltrb(win_space)
+        if win_space == nil then
+            win_space = false
+        end
         local inv = vmath.inv(width_projection() * _view_matrix)
         local bl_x, bl_y = unpack(unproject_xyz(inv, 0, 0, 0))
-        local br_x, br_y = unpack(unproject_xyz(inv, DISPLAY_WIDTH, 0, 0))
-        local tl_x, tl_y = unpack(unproject_xyz(inv, 0, DISPLAY_HEIGHT, 0))
+        local br_x, br_y = unpack(unproject_xyz(inv, win_space and WINDOW_WIDTH or DISPLAY_WIDTH, 0, 0))
+        local tl_x, tl_y = unpack(unproject_xyz(inv, 0, win_space and WINDOW_HEIGHT or DISPLAY_HEIGHT, 0))
         return vmath.vector4(bl_x, tl_y, br_x, bl_y)
     end
     local function set_auto_zoom(active)
@@ -275,10 +308,12 @@ function CameraModule()
         set_zoom = set_zoom,
         set_view = set_view,
         world_to_window = world_to_window,
+        world_to_screen = world_to_screen,
         width_projection = width_projection,
         set_auto_zoom = set_auto_zoom,
         set_dynamic_orientation = set_dynamic_orientation,
-        is_dynamic_orientation = is_dynamic_orientation
+        is_dynamic_orientation = is_dynamic_orientation,
+        update_window_size = update_window_size
     }
 end
 function ____exports.register_camera()

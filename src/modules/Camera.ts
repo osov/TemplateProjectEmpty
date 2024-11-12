@@ -264,7 +264,10 @@ function CameraModule() {
     }
 
     function project(view: vmath.matrix4, projection: vmath.matrix4, world: vmath.vector3) {
-        v4_tmp.x, v4_tmp.y, v4_tmp.z, v4_tmp.w = world.x, world.y, world.z, 1;
+        v4_tmp.x = world.x;
+        v4_tmp.y = world.y;
+        v4_tmp.z = world.z;
+        v4_tmp.w = 1;
         const v4: vmath.vector3 = projection * view * v4_tmp as vmath.vector3;
         world.x = ((v4.x + 1) / 2) * DISPLAY_WIDTH;
         world.y = ((v4.y + 1) / 2) * DISPLAY_HEIGHT;

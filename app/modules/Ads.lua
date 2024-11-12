@@ -336,6 +336,10 @@ function AdsModule()
     local function set_real_reward_mode(val)
         is_real_reward = val
     end
+    local function set_ads_interval(time)
+        ADS_CONFIG.ads_interval = time
+        last_view_ads = System.now() - (ADS_CONFIG.ads_interval - ADS_CONFIG.ads_delay)
+    end
     init()
     return {
         is_ready = is_ready,
@@ -354,7 +358,8 @@ function AdsModule()
         leaderboards_get_entitys = leaderboards_get_entitys,
         set_real_reward_mode = set_real_reward_mode,
         is_view_inter = is_view_inter,
-        is_allow_ads = is_allow_ads
+        is_allow_ads = is_allow_ads,
+        set_ads_interval = set_ads_interval
     }
 end
 function ____exports.register_ads()

@@ -22,7 +22,7 @@ function MetricaModule()
             )
         end
         if yametrica ~= nil then
-            yametrica.hit(event, json_data == "" and ({}) or json_data)
+            yametrica.reach_goal(event, json_data == "" and ({}) or json_data)
         end
     end
     return {init = init, report = report}

@@ -145,7 +145,7 @@ function AdsModule() {
             ads_android.show_interstitial();
             EventBus.trigger('ON_INTER_SHOWN', { result: true });
         }
-        else if (System.platform == 'Windows') {
+        else if (System.platform == 'Windows' || System.platform == 'Darwin' || System.platform == 'Linux') {
             log('fake-Inter show wait');
             Sound.set_pause(true);
             if (is_fix_last_inter)
@@ -169,7 +169,7 @@ function AdsModule() {
                 ads_android.show_interstitial();
             EventBus.trigger('ON_REWARDED_SHOWN', { result: true });
         }
-        else if (System.platform == 'Windows') {
+        else if (System.platform == 'Windows' || System.platform == 'Darwin' || System.platform == 'Linux') {
             log('fake-Reward showingt');
             Sound.set_pause(true);
             timer.delay(5, false, () => {

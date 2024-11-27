@@ -96,8 +96,12 @@ function CameraModule() {
     function update_window_size(is_trigger_event = true, is_force = false) {
         const [width, height] = window.get_size();
 
-        WINDOW_WIDTH = width;
-        WINDOW_HEIGHT = height;
+        if (width > 0 && height > 0) {
+            WINDOW_WIDTH = width;
+            WINDOW_HEIGHT = height;
+        }
+        else
+            Log.error('!!! window.get_size is', width, height);
 
         // screen
         const sx = WINDOW_WIDTH / DISPLAY_WIDTH;

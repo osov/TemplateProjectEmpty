@@ -33,3 +33,6 @@ app/build
 *.pyc
 app/builtins
 dmengine*
+.editor_settings
+debug.keystore
+debug.keystore.pass.txt

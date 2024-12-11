@@ -49,6 +49,17 @@ function SoundModule() {
         sound.set_group_gain('master', active ? 1 : 0);
     }
 
+    function load(name: string, path: string) {
+        const [sound_data, error] = sys.load_resource(path);
+        if (error != null) {
+            Log.log(error);
+            return;
+        }
+
+        const sound_path = go.get(Manager.MAIN + 'sounds#' + name, "sound") as string;
+        resource.set_sound(sound_path, sound_data);
+    }
+
     function play(name: string, speed = 1, volume = 1) {
         Manager.send('SYS_PLAY_SND', { name, speed, volume });
     }
@@ -69,5 +80,5 @@ function SoundModule() {
 
     init();
 
-    return { _on_message, is_active, set_active, play, stop, set_pause, attach_druid_click };
+    return { _on_message, is_active, set_active, load, play, stop, set_pause, attach_druid_click };
 }

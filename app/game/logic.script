@@ -1,0 +1,33 @@
+local ____exports = {}
+local ____GoManager = require("modules.GoManager")
+local GoManager = ____GoManager.GoManager
+function ____exports.init(self)
+    Manager.init_script()
+    local go_manager = GoManager()
+    EventBus.on(
+        "HOME_LOADED",
+        function()
+            Sound.play("music")
+            go_manager.set_prefab(
+                "/assets/resources/home/prefab.goc",
+                function()
+                    go_manager.make_go(vmath.vector3(270, -480, 0))
+                end
+            )
+        end
+    )
+    Resource.load(
+        "home",
+        function()
+            Sound.load("music", "/assets/resources/home/music.oggc")
+            EventBus.send("HOME_LOADED")
+        end
+    )
+end
+function ____exports.final(self)
+    EventBus.off_all_current_script()
+    Manager.final_script()
+end
+init = ____exports.init
+final = ____exports.final
+

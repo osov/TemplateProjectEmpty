@@ -1,0 +1,17 @@
+name: "resource"
+instances {
+  id: "prefab"
+  prototype: "/assets/resources/home/prefab.go"
+}
+scale_along_z: 0
+embedded_instances {
+  id: "sounds"
+  data: "embedded_components {\n"
+  "  id: \"music\"\n"
+  "  type: \"sound\"\n"
+  "  data: \"sound: \\\"/assets/resources/home/music.ogg\\\"\\n"
+  "gain: 0.5\\n"
+  "\"\n"
+  "}\n"
+  ""
+}

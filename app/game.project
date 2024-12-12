@@ -39,6 +39,7 @@ dependencies#6 = https://github.com/osov/defold-app-metrica/archive/refs/heads/m
 dependencies#7 = https://github.com/osov/defold-yandex-easy-monetization/archive/refs/heads/main.zip
 dependencies#8 = https://github.com/defold/extension-safearea/archive/master.zip
 dependencies#9 = https://github.com/Insality/defold-event/archive/refs/tags/1.zip
+dependencies#10 = https://github.com/indiesoftby/defold-liveupdate-reszip/archive/refs/tags/1.6.0.zip
 
 [native_extension]
 app_manifest = /project_settings/generated.appmanifest

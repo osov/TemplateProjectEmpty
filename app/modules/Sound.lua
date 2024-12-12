@@ -39,6 +39,15 @@ function SoundModule()
             sound.play("/sounds#" .. message.name, {speed = message.speed, gain = message.volume})
         end
     end
+    local function load(name, path)
+        local sound_data, ____error = sys.load_resource(path)
+        if ____error ~= nil then
+            Log.log(____error)
+            return
+        end
+        local sound_path = go.get((Manager.MAIN .. "sounds#") .. name, "sound")
+        resource.set_sound(sound_path, sound_data)
+    end
     local function stop(name)
         Manager.send("SYS_STOP_SND", {name = name})
     end
@@ -57,6 +66,7 @@ function SoundModule()
         _on_message = _on_message,
         is_active = is_active,
         set_active = set_active,
+        load = load,
         play = play,
         stop = stop,
         set_pause = set_pause,

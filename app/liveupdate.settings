@@ -1,0 +1,6 @@
+[liveupdate]
+mode = Zip
+zip-filepath = ./build/resources
+publickey = ./manifest.public.der
+privatekey = ./manifest.private.der
+

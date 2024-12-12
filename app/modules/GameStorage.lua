@@ -11,7 +11,7 @@ function GameStorageModule()
         if _type == nil then
             _type = ""
         end
-        local data = Storage.get("settings-" .. tostring(key))
+        local data = Storage.get("settings-" .. key)
         if data == nil then
             if default_list[key] == nil then
                 Log.error("Ключ не зарегистрирован:", key)
@@ -20,7 +20,7 @@ function GameStorageModule()
             local val = default_list[key]
             if _type ~= "" and __TS__TypeOf(val) ~= _type then
                 Log.error(
-                    "Ключ имеет неправильный тип. Ключ:" .. tostring(key),
+                    "Ключ имеет неправильный тип. Ключ:" .. key,
                     "ожидаемый тип:" .. _type,
                     "фактический тип:" .. __TS__TypeOf(val)
                 )
@@ -30,10 +30,7 @@ function GameStorageModule()
         return data
     end
     local function set(key, val)
-        Storage.set(
-            "settings-" .. tostring(key),
-            val
-        )
+        Storage.set("settings-" .. key, val)
     end
     local function get(key)
         return get_key(key)

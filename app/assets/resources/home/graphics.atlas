@@ -1,0 +1,4 @@
+images {
+  image: "/assets/ui/home.png"
+}
+extrude_borders: 2

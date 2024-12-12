@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
+import { VoidMessage } from "../modules/modules_const";
+
 export const IS_DEBUG_MODE = false;
 export const IS_HUAWEI = sys.get_sys_info().system_name == 'Android' && sys.get_config("android.package").includes('huawei');
 
@@ -34,12 +36,12 @@ export const _GAME_CONFIG = {
 
 // конфиг с хранилищем  (отсюда не читаем/не пишем, все запрашивается/меняется через GameStorage)
 export const _STORAGE_CONFIG = {
-
+    resource_manifest: {}
 };
 
 
 
 // пользовательские сообщения под конкретный проект, доступны типы через глобальную тип-переменную UserMessages
 export type _UserMessages = {
-
+    HOME_LOADED: VoidMessage
 };

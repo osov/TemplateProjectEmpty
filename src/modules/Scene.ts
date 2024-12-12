@@ -18,12 +18,18 @@ export function register_scene() {
     (_G as any).Scene = SceneModule();
 }
 
-
 function SceneModule() {
+    const SCENE_ID = Manager.MAIN + 'scenes';
+
+    const loaded_scenes: { [key in string]: hash } = {};
+
     let wait_load_scene = '';
     let last_loading_scene = '';
     let last_scene = '';
+
+    let is_restarting_scene = false;
     let _wait_ready_manager = false;
+    let _unload_last_scene = false;
 
     function init() {
         if (System.platform == 'HTML5')
@@ -36,33 +42,61 @@ function SceneModule() {
             html5.run(`set_light('` + color + `')`);
     }
 
-    // загрузить сцену с именем. wait_ready_manager - ждать ли сначала полной загрузки менеджера
-    function load(name: string, wait_ready_manager = false) {
+    // загрузить сцену с именем
+    // wait_ready_manager - ждать ли сначала полной загрузки менеджера
+    // unload_last_scene - будет ли выгружена текущая сцена
+    function load(name: string, wait_ready_manager = false, unload_last_scene = true) {
         _wait_ready_manager = wait_ready_manager;
+        _unload_last_scene = unload_last_scene;
         Manager.send('SYS_LOAD_SCENE', { name });
+    }
+
+    function unload(name: string) {
+        Manager.send('SYS_UNLOAD_SCENE', { name });
     }
 
     function restart() {
         Manager.send('SYS_RESTART_SCENE');
     }
 
-    let is_restarting_scene = false;
+    function get_current_name() {
+        return last_scene;
+    }
+
     function _on_message(_this: any, message_id: hash, _message: any, sender: hash) {
-        if (message_id == to_hash('MANAGER_READY')) {
-            // еще не поступала никакая сцена на загрузку значит ничего не делаем
-            if (wait_load_scene == '')
-                return;
-            Manager.send('SYS_LOAD_SCENE', { name: wait_load_scene });
-        }
+        on_load_wait_scene(message_id);
+        on_restart_scene(message_id);
+        on_unload_scene(message_id, _message);
+        on_load_scene(message_id, _message, sender);
+    }
+
+    function on_load_wait_scene(message_id: hash) {
+        if (message_id != to_hash('MANAGER_READY') || wait_load_scene == '')
+            return;
+        Manager.send('SYS_LOAD_SCENE', { name: wait_load_scene });
+    }
+
+    function on_restart_scene(message_id: hash) {
         if (message_id == to_hash('SYS_RESTART_SCENE')) {
             if (last_scene == '')
                 return Log.warn('Сцена для перезагрузки не найдена');
-            const n = Manager.MANAGER_ID + "#" + last_scene;
-            msg.post(n, "disable");
-            msg.post(n, "final");
-            msg.post(n, "unload");
+            const name = SCENE_ID + "#" + last_scene;
+            msg.post(name, "disable");
+            msg.post(name, "final");
+            msg.post(name, "unload");
             is_restarting_scene = true;
         }
+
+        // рестарт сцены после выгрузки
+        if (message_id == hash("proxy_unloaded")) {
+            if (is_restarting_scene && last_scene != '') {
+                last_loading_scene = last_scene;
+                msg.post(SCENE_ID + "#" + last_scene, "load");
+            }
+        }
+    }
+
+    function on_load_scene(message_id: hash, _message: any, sender: hash) {
         if (message_id == to_hash('SYS_LOAD_SCENE')) {
             const message = _message as Messages['SYS_LOAD_SCENE'];
             // ждем готовности модулей
@@ -72,36 +106,44 @@ function SceneModule() {
             }
             wait_load_scene = '';
             last_loading_scene = message.name;
-            msg.post(Manager.MANAGER_ID + "#" + message.name, "load");
+            Resource.load(message.name, () => {
+                msg.post(SCENE_ID + "#" + message.name, "load");
+            }, SCENE_ID);
+
         }
-        if (message_id == hash("proxy_unloaded")) {
-            if (is_restarting_scene && last_scene != '') {
-                last_loading_scene = last_scene;
-                msg.post(Manager.MANAGER_ID + "#" + last_scene, "load");
-            }
-        }
+
         if (message_id == hash("proxy_loaded")) {
-            if (last_scene != '' && !is_restarting_scene) {
-                const n = Manager.MANAGER_ID + "#" + last_scene;
-                msg.post(n, "disable");
-                msg.post(n, "final");
-                msg.post(n, "unload");
-                last_scene = '';
-            }
             is_restarting_scene = false;
             msg.post(sender, "init");
             msg.post(sender, "enable");
             last_scene = last_loading_scene;
             last_loading_scene = '';
+            loaded_scenes[last_scene] = sender;
             EventBus.trigger('ON_SCENE_LOADED', { name: last_scene }, false);
         }
     }
 
-    function get_current_name() {
-        return last_scene;
+    function on_unload_scene(message_id: hash, _message: any) {
+        if (message_id == to_hash("SYS_UNLOAD_SCENE")) {
+            const message = _message as Messages['SYS_UNLOAD_SCENE'];
+            const name = loaded_scenes[message.name];
+            if (name != undefined) {
+                msg.post(name, "disable");
+                msg.post(name, "final");
+                msg.post(name, "unload");
+            }
+        }
+
+        if (message_id == hash("proxy_loaded") && _unload_last_scene && last_scene != '' && !is_restarting_scene) {
+            const name = SCENE_ID + "#" + last_scene;
+            msg.post(name, "disable");
+            msg.post(name, "final");
+            msg.post(name, "unload");
+            last_scene = '';
+        }
     }
 
     init();
 
-    return { _on_message, restart, load, set_bg, get_current_name };
+    return { _on_message, restart, load, unload, set_bg, get_current_name };
 }

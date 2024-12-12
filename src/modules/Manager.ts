@@ -16,6 +16,7 @@ import { register_rate } from "./Rate";
 import { register_metrica } from "./Metrica";
 import { register_camera } from "./Camera";
 import { register_html_bridge } from './HtmlBridge';
+import { register_resources } from "./Resource";
 
 
 
@@ -50,7 +51,8 @@ export function register_manager() {
 
 function ManagerModule() {
     let _is_ready = false;
-    const MANAGER_ID = 'main:/manager';
+    const MAIN = 'main:/';
+    const MANAGER_ID = MAIN + 'manager';
     const UI_ID = '/ui#game';
     const LOGIC_ID = '/game_logic#game';
     const VIEW_ID = '/game_view#view';
@@ -74,6 +76,7 @@ function ManagerModule() {
         register_metrica();
         register_sound();
         register_lang();
+        register_resources();
         register_scene();
         register_camera();
         register_ads();
@@ -135,11 +138,11 @@ function ManagerModule() {
     }
 
     function on_message_main(_this: any, message_id: hash, message: any, sender: hash) {
-    	if (_is_ready){
-        	Scene._on_message(_this, message_id, message, sender);
-        	Sound._on_message(_this, message_id, message, sender);
-        	Rate._on_message(_this, message_id, message, sender);
-    	}
+        if (_is_ready) {
+            Scene._on_message(_this, message_id, message, sender);
+            Sound._on_message(_this, message_id, message, sender);
+            Rate._on_message(_this, message_id, message, sender);
+        }
     }
 
     // можно вызывать в каждом init всех gui/go чтобы применялись языки например
@@ -155,7 +158,7 @@ function ManagerModule() {
 
     return {
         init, on_message_main, on_message, is_ready, init_script, final_script, send, send_raw, send_game, send_raw_game, send_view, send_raw_view, send_raw_ui,
-        MANAGER_ID, UI_ID, LOGIC_ID, VIEW_ID
+        MAIN, MANAGER_ID, UI_ID, LOGIC_ID, VIEW_ID
     };
 }
 

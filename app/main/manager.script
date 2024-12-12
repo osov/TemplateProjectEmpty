@@ -42,7 +42,6 @@ function ____exports.init(self)
                 HtmlBridge.game_ready()
             end
             Scene.load("menu")
-            Scene.set_bg("#999")
         end,
         true
     )

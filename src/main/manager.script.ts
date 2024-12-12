@@ -39,7 +39,6 @@ export function init(this: props) {
         if (System.platform == 'HTML5')
             HtmlBridge.game_ready();
         Scene.load('menu');
-        Scene.set_bg('#999');
     }, true);
 }
 

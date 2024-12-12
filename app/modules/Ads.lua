@@ -69,7 +69,7 @@ function AdsModule()
         elseif System.platform == "Android" or System.platform == "iPhone OS" then
             ads_android.show_interstitial()
             EventBus.trigger("ON_INTER_SHOWN", {result = true})
-        elseif System.platform == "Windows" then
+        elseif System.platform == "Windows" or System.platform == "Darwin" or System.platform == "Linux" then
             log("fake-Inter show wait")
             Sound.set_pause(true)
             if is_fix_last_inter then
@@ -96,7 +96,7 @@ function AdsModule()
                 ads_android.show_interstitial()
             end
             EventBus.trigger("ON_REWARDED_SHOWN", {result = true})
-        elseif System.platform == "Windows" then
+        elseif System.platform == "Windows" or System.platform == "Darwin" or System.platform == "Linux" then
             log("fake-Reward showingt")
             Sound.set_pause(true)
             timer.delay(

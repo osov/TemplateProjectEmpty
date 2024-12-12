@@ -19,8 +19,6 @@ export function init(this: props): void {
     druid.register("checkbox", checkbox);
     this.druid = druid.new(this);
 
-
-
     if (System.platform == 'iPhone OS') {
         set_text('privacy', Lang.get_lang() == 'ru' ? "Политика конфиденциальности" : "Privacy Policy");
         this.druid.new_button('btnPrivacy', () => sys.open_url(Lang.get_lang() == 'ru' ? 'https://sb-games.ru/policy-ru.html' : 'https://sb-games.ru/policy.html'));
@@ -52,6 +50,8 @@ export function init(this: props): void {
             });
         }
     }
+
+    Scene.load('game', false, false);
 }
 
 

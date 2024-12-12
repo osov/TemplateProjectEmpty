@@ -1,0 +1,18 @@
+name: "game"
+scale_along_z: 0
+embedded_instances {
+  id: "logic"
+  data: "components {\n"
+  "  id: \"logic\"\n"
+  "  component: \"/game/logic.script\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"factory\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/assets/empty.go\\\"\\n"
+  "load_dynamically: true\\n"
+  "dynamic_prototype: true\\n"
+  "\"\n"
+  "}\n"
+  ""
+}

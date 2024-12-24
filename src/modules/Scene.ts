@@ -31,7 +31,7 @@ function SceneModule() {
     }
 
     function set_bg(color: string) {
-        msg.post("@render:", "clear_color", { color: hex2rgba(color, 0) });
+        msg.post("@render:", "clear_color", { color: hex2rgba(color, 1) });
         if (System.platform == 'HTML5')
             html5.run(`set_light('` + color + `')`);
     }

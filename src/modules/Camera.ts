@@ -43,10 +43,7 @@ function CameraModule() {
         let last_window_x = 0;
         let last_window_y = 0;
 
-        window.set_listener((self: any, event: any) => {
-            if (event != window.WINDOW_EVENT_RESIZED)
-                return;
-
+        timer.delay(0.1, true, () => {
             const [window_x, window_y] = window.get_size();
             if (last_window_x != window_x || last_window_y != window_y) {
                 last_window_x = window_x;

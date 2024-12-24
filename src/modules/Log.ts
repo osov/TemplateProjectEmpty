@@ -23,8 +23,8 @@ export function register_log() {
 }
 
 
-type LogLevels = 'notice' | 'log' | 'info' | 'warn' | 'error' | 'screen';
-const log_priority = ['notice', 'log', 'info', 'warn', 'error'];
+type LogLevels = 'log' | 'info' | 'warn' | 'error' ;
+const log_priority = ['log', 'info', 'warn', 'error'];
 const worker = log_worker();
 
 function log_worker() {
@@ -43,7 +43,7 @@ function log_worker() {
         }
         print(str);
         if (System.platform == 'HTML5')
-            html5.run("console.log(" + json.encode(str) + ")");
+            html5.run("console."+level+"(" + json.encode(str) + ")");
     }
 
     return { show };
@@ -51,9 +51,9 @@ function log_worker() {
 
 
 
-function LogModule(_prefix = '', _log_level: LogLevels = 'notice') {
+function LogModule(_prefix = '', _log_level: LogLevels = 'log') {
 
-    function get_with_prefix(prefix: string, log_level: LogLevels = 'notice') {
+    function get_with_prefix(prefix: string, log_level: LogLevels = 'log') {
         return LogModule(prefix, log_level);
     }
 
@@ -73,10 +73,6 @@ function LogModule(_prefix = '', _log_level: LogLevels = 'notice') {
         worker.show(_prefix, level, _log_level, str);
     }
 
-    function notice(..._args: any) {
-        send('notice', _args);
-    }
-
     function log(..._args: any) {
         send('log', _args);
     }
@@ -92,7 +88,7 @@ function LogModule(_prefix = '', _log_level: LogLevels = 'notice') {
 
 
 
-    return { get_with_prefix, notice, log, warn, error };
+    return { get_with_prefix, log, warn, error };
 }
 
 let screen_text = '';

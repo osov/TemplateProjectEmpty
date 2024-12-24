@@ -17,8 +17,12 @@ function CameraModule()
             is_force = false
         end
         local width, height = window.get_size()
-        WINDOW_WIDTH = width
-        WINDOW_HEIGHT = height
+        if width > 0 and height > 0 then
+            WINDOW_WIDTH = width
+            WINDOW_HEIGHT = height
+        else
+            Log.error("!!! window.get_size is", width, height)
+        end
         local sx = WINDOW_WIDTH / DISPLAY_WIDTH
         local sy = WINDOW_HEIGHT / DISPLAY_HEIGHT
         local adjust = GUI_ADJUST.ADJUST_FIT
@@ -127,25 +131,10 @@ function CameraModule()
         )
     end
     function project(view, projection, world)
-        do
-            do
-                do
-                    do
-                        do
-                            do
-                                local ____ = v4_tmp.x
-                                local ____ = v4_tmp.y
-                            end
-                            local ____ = v4_tmp.z
-                        end
-                        v4_tmp.w = world.x
-                    end
-                    local ____ = world.y
-                end
-                local ____ = world.z
-            end
-            local ____ = 1
-        end
+        v4_tmp.x = world.x
+        v4_tmp.y = world.y
+        v4_tmp.z = world.z
+        v4_tmp.w = 1
         local v4 = projection * view * v4_tmp
         world.x = (v4.x + 1) / 2 * DISPLAY_WIDTH
         world.y = (v4.y + 1) / 2 * DISPLAY_HEIGHT

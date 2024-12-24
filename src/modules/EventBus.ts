@@ -88,7 +88,7 @@ function EventBusModule() {
         const key_message = ensure_hash(id_message);
         if (!listeners[key_message]) {
             bus_log.warn(`Ни один слушатель для события не зарегистрирован: ${id_message}, off`);
-            return;
+            return false;
         }
         const list = listeners[key_message];
         for (let i = list.length - 1; i >= 0; i--) {
@@ -97,15 +97,21 @@ function EventBusModule() {
                 if (!l.is_message_mode && events[key_message])
                     events[key_message].unsubscribe(callback);
                 list.splice(i, 1);
-                return;
+                if (list.length == 0) {
+                    delete listeners[key_message];
+                    if (events[key_message].is_empty())
+                        delete events[key_message];
+                }
+                return true;
             }
         }
+        return false;
     }
 
     function off_all_id_message<T extends MessageId>(id_message: T) {
         const key_message = ensure_hash(id_message);
         if (!listeners[key_message]) {
-            bus_log.warn(`Ни один слушатель для события не зарегистрирован: ${id_message}, off_all_id_message`);
+            //bus_log.warn(`Ни один слушатель для события не зарегистрирован: ${id_message}, off_all_id_message`);
             return;
         }
         if (events[key_message]) {
@@ -124,6 +130,11 @@ function EventBusModule() {
                     if (!l.is_message_mode && events[key_message])
                         events[key_message].unsubscribe(l.callback);
                     listener.splice(i, 1);
+                    if (listener.length == 0) {
+                        delete listeners[key_message];
+                        if (events[key_message].is_empty())
+                            delete events[key_message];
+                    }
                 }
             }
         }
@@ -139,6 +150,11 @@ function EventBusModule() {
                     if (!l.is_message_mode && events[key_message])
                         events[key_message].unsubscribe(l.callback);
                     listener.splice(i, 1);
+                    if (listener.length == 0) {
+                        delete listeners[key_message];
+                        if (events[key_message].is_empty())
+                            delete events[key_message];
+                    }
                 }
             }
         }
@@ -192,5 +208,13 @@ function EventBusModule() {
         }
     }
 
-    return { on, once, off, off_all_id_message, off_all_context, off_all_current_script, on_message, send, trigger };
+    function debug() {
+        log('EventBus listeners', Object.keys(listeners).length);
+        log('EventBus events', Object.keys(events).length);
+        //for (const k in listeners)
+        //    log(k, listeners[k].length);
+
+    }
+
+    return { on, once, off, off_all_id_message, off_all_context, off_all_current_script, on_message, send, trigger, debug };
 }

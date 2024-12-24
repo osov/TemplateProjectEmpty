@@ -16,7 +16,7 @@ import { register_rate } from "./Rate";
 import { register_metrica } from "./Metrica";
 import { register_camera } from "./Camera";
 import { register_html_bridge } from './HtmlBridge';
-
+import { register_popup } from "./Popup";
 
 
 /*
@@ -78,6 +78,7 @@ function ManagerModule() {
         register_camera();
         register_ads();
         register_rate();
+        register_popup();
         Metrica.init(ID_YANDEX_METRICA);
         check_ready(callback_ready);
     }
@@ -135,11 +136,11 @@ function ManagerModule() {
     }
 
     function on_message_main(_this: any, message_id: hash, message: any, sender: hash) {
-    	if (_is_ready){
-        	Scene._on_message(_this, message_id, message, sender);
-        	Sound._on_message(_this, message_id, message, sender);
-        	Rate._on_message(_this, message_id, message, sender);
-    	}
+        if (_is_ready) {
+            Scene._on_message(_this, message_id, message, sender);
+            Sound._on_message(_this, message_id, message, sender);
+            Rate._on_message(_this, message_id, message, sender);
+        }
     }
 
     // можно вызывать в каждом init всех gui/go чтобы применялись языки например

@@ -39,7 +39,12 @@ export type _SystemMessages = {
     SYS_SHOW_BANNER: ShowBannerData,
     SYS_HIDE_BANNER: VoidMessage,
     SYS_ON_RESIZED: { width: number, height: number },
-
+    ON_WS_CONNECTED: VoidMessage,
+    ON_WS_DISCONNECTED: { wait_stop: boolean }
+    ON_WS_DATA: { data: string },
+    POPUP_CALL: { name: string, data: any, is_hide: boolean },
+    POPUP_RESULT: { result: any, is_closed: boolean },
+    
     ON_INTER_SHOWN: AdsResult,
     ON_REWARDED_SHOWN: AdsResult,
     MSG_ON_MOVE: PosXYMessage,

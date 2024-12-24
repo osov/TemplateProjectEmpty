@@ -80,7 +80,6 @@ app_icon_152x152 = /assets/icons/IOS/152.png
 app_icon_167x167 = /assets/icons/IOS/167.png
 app_icon_120x120 = /assets/icons/IOS/120.png
 app_icon_180x180 = /assets/icons/IOS/180.png
-launch_screen = /project_settings/LaunchScreenBlack.storyboard
 infoplist = /project_settings/info.plist
 default_language = ru
 localizations = en,ru

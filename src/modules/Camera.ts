@@ -33,6 +33,8 @@ function CameraModule() {
     let _zoom = 1;
     let is_auto_zoom = false;
     let _dynamic_orientation = false;
+    let _zoom_width = 0;
+    let _zoom_height = 0;
 
 
     function init() {
@@ -62,6 +64,8 @@ function CameraModule() {
 
     function transform_input_action(action: any) {
         if (is_gui_projection && action.x !== undefined) {
+            action.orig_x = action.x;
+            action.orig_y = action.y;
             const tp = screen_to_world(action.x as number, action.y as number);
             const [window_x, window_y] = window.get_size();
             const stretch_x = window_x / gui.get_width();
@@ -289,7 +293,14 @@ function CameraModule() {
     }
 
     function update_auto_zoom(width: number, height: number) {
-        const [dw, dh] = get_width_height();
+        let dw = 0;
+        let dh = 0;
+        if (_zoom_width > 0 && _zoom_height > 0) {
+            dw = _zoom_width;
+            dh = _zoom_height;
+        }
+        else
+            [dw, dh] = get_width_height();
         if (!is_auto_zoom)
             return;
         const window_aspect = width / height;
@@ -302,8 +313,10 @@ function CameraModule() {
         set_zoom(zoom);
     }
 
-    function set_auto_zoom(active: boolean) {
+    function set_auto_zoom(active: boolean, zoom_width = 0, zoom_height = 0) {
         is_auto_zoom = active;
+        _zoom_width = zoom_width;
+        _zoom_height = zoom_height;
     }
 
     function set_dynamic_orientation(active: boolean) {

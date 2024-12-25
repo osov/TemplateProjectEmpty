@@ -6,6 +6,7 @@ ____exports.IS_HUAWEI = sys.get_sys_info().system_name == "Android" and __TS__St
     sys.get_config("android.package"),
     "huawei"
 )
+____exports.SERVER_URL = "http://localhost:8000"
 ____exports.ADS_CONFIG = {
     is_mediation = false,
     id_banners = {},

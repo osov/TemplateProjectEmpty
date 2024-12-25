@@ -21,6 +21,7 @@ interface DragData {
 
 type CallbackFunction = () => void;
 
+// TODO: get size of factories pool
 export function GoManager() {
     let go_list: hash[] = [];
     let game_items: IGameItem[] = [];
@@ -28,11 +29,13 @@ export function GoManager() {
     let index = 0;
     let index2GameItem: { [key in number]: IGameItem } = {};
 
+    // TODO: pool of factories and get one factory for each prefab, if limits overfflowed then get factory from start of the pool
     function set_prefab(resource_path = "assets/empty.goc", on_loaded = () => { }) {
         factory.set_prototype("#factory", resource_path);
         factory.load("#factory", on_loaded);
     }
 
+    // TODO: make go by name of the factory maped from pool
     function make_go(pos: vmath.vector3, is_add_list = false) {
         const item = factory.create("#factory", pos);
         if (is_add_list)

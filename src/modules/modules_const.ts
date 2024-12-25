@@ -27,6 +27,7 @@ export interface ResourceMessage extends NameMessage { path: string; }
 
 export type _SystemMessages = {
     MANAGER_READY: VoidMessage,
+    SYS_LOAD_SND: ResourceMessage,
     SYS_PLAY_SND: SndMessage,
     SYS_STOP_SND: NameMessage,
     ON_SOUND_PAUSE: ValMessage,

@@ -3,19 +3,21 @@ local __TS__ObjectEntries = ____lualib.__TS__ObjectEntries
 local ____exports = {}
 local ResourceModule
 local reszip = require("liveupdate_reszip.reszip")
+local ____game_config = require("main.game_config")
+local SERVER_URL = ____game_config.SERVER_URL
 function ResourceModule()
-    local load_manifest, try_load, manifest
+    local load_manifest, try_load, manifest, _is_ready
     function load_manifest()
-        local url = html5.run("window.location.href")
         local function handle(____self, id, response)
             if response.status == 200 then
                 Log.log("RESOURCE MANIFEST LOADED")
                 manifest = json.decode(response.response)
+                _is_ready = true
             else
                 Log.error("Failed load manifest of resources " .. tostring(response.status))
             end
         end
-        http.request(url .. "resources/manifest.json", "GET", handle)
+        http.request(SERVER_URL .. "resources/manifest.json", "GET", handle)
     end
     function try_load(name, path, on_loaded)
         if not liveupdate then
@@ -81,8 +83,9 @@ function ResourceModule()
     local RESOURCE_ID = Manager.MAIN .. "resources"
     local loading_resource_callbacks = {}
     manifest = {}
+    _is_ready = false
     local function init()
-        if html5 ~= nil then
+        if liveupdate ~= nil then
             load_manifest()
         end
         EventBus.on(
@@ -91,6 +94,9 @@ function ResourceModule()
                 try_load(message.name, message.path, loading_resource_callbacks[message.name])
             end
         )
+    end
+    local function is_ready()
+        return _is_ready
     end
     local function load(name, on_loaded, path)
         if path == nil then
@@ -102,7 +108,7 @@ function ResourceModule()
         EventBus.send("SYS_LOAD_RESOURCE", {name = name, path = path})
     end
     init()
-    return {load = load}
+    return {is_ready = is_ready, load = load}
 end
 function ____exports.register_resources()
     _G.Resource = ResourceModule()

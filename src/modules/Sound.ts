@@ -30,6 +30,17 @@ function SoundModule() {
     }
 
     function _on_message(_this: any, message_id: hash, _message: any, sender: hash) {
+        if (message_id == to_hash('SYS_LOAD_SND')) {
+            const message = _message as Messages['SYS_LOAD_SND'];
+            const [sound_data, error] = sys.load_resource(message.path);
+            if (error != null) {
+                Log.log(error);
+                return;
+            }
+
+            const sound_path = go.get(Manager.MAIN + 'sounds#' + message.name, "sound") as string;
+            resource.set_sound(sound_path, sound_data);
+        }
         if (message_id == to_hash('SYS_STOP_SND')) {
             const message = _message as Messages['SYS_STOP_SND'];
             sound.stop('/sounds#' + message.name);
@@ -50,14 +61,7 @@ function SoundModule() {
     }
 
     function load(name: string, path: string) {
-        const [sound_data, error] = sys.load_resource(path);
-        if (error != null) {
-            Log.log(error);
-            return;
-        }
-
-        const sound_path = go.get(Manager.MAIN + 'sounds#' + name, "sound") as string;
-        resource.set_sound(sound_path, sound_data);
+        Manager.send('SYS_LOAD_SND', { name, path });
     }
 
     function play(name: string, speed = 1, volume = 1) {

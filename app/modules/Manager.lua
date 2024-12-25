@@ -52,7 +52,7 @@ function ManagerModule()
             0.1,
             true,
             function()
-                if Ads.is_ready() then
+                if Resource.is_ready() and Ads.is_ready() then
                     timer.cancel(id_timer)
                     _is_ready = true
                     log("All Managers ready ver: " .. sys.get_config("project.version"))

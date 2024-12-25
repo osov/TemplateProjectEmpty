@@ -7,6 +7,8 @@ import { VoidMessage } from "../modules/modules_const";
 export const IS_DEBUG_MODE = false;
 export const IS_HUAWEI = sys.get_sys_info().system_name == 'Android' && sys.get_config("android.package").includes('huawei');
 
+export const SERVER_URL = 'http://localhost:8000';
+
 // параметры инициализации для ADS
 export const ADS_CONFIG = {
     is_mediation: false,

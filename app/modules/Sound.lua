@@ -30,6 +30,16 @@ function SoundModule()
         druid.set_sound_function(function() return play(name) end)
     end
     local function _on_message(_this, message_id, _message, sender)
+        if message_id == to_hash("SYS_LOAD_SND") then
+            local message = _message
+            local sound_data, ____error = sys.load_resource(message.path)
+            if ____error ~= nil then
+                Log.log(____error)
+                return
+            end
+            local sound_path = go.get((Manager.MAIN .. "sounds#") .. message.name, "sound")
+            resource.set_sound(sound_path, sound_data)
+        end
         if message_id == to_hash("SYS_STOP_SND") then
             local message = _message
             sound.stop("/sounds#" .. message.name)
@@ -40,13 +50,7 @@ function SoundModule()
         end
     end
     local function load(name, path)
-        local sound_data, ____error = sys.load_resource(path)
-        if ____error ~= nil then
-            Log.log(____error)
-            return
-        end
-        local sound_path = go.get((Manager.MAIN .. "sounds#") .. name, "sound")
-        resource.set_sound(sound_path, sound_data)
+        Manager.send("SYS_LOAD_SND", {name = name, path = path})
     end
     local function stop(name)
         Manager.send("SYS_STOP_SND", {name = name})

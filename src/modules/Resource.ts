@@ -6,6 +6,7 @@
 
 
 import * as reszip from 'liveupdate_reszip.reszip';
+import { SERVER_URL } from '../main/game_config';
 
 /*
     Модуль для работы с рессурсами
@@ -25,25 +26,31 @@ function ResourceModule() {
     const loading_resource_callbacks: { [key in string]: () => void } = {};
 
     let manifest: { [key in string]: string } = {};
+    let _is_ready = false;
 
     function init() {
-        if (html5 != null)
+        if (liveupdate != null) {
             load_manifest();
+        }
 
         EventBus.on('SYS_LOAD_RESOURCE', (message) => {
             try_load(message.name, message.path, loading_resource_callbacks[message.name]);
         });
     }
 
+    function is_ready() {
+        return _is_ready;
+    }
+
     function load_manifest() {
-        const url = html5.run('window.location.href');
         const handle = (self: any, id: number, response: any) => {
             if (response.status == 200) {
                 Log.log('RESOURCE MANIFEST LOADED');
                 manifest = json.decode(response.response);
+                _is_ready = true;
             } else Log.error(`Failed load manifest of resources ${response.status as number}`);
         };
-        http.request(url + "resources/manifest.json", 'GET', handle);
+        http.request(SERVER_URL + "resources/manifest.json", 'GET', handle);
     }
 
     function load(name: string, on_loaded?: () => void, path = RESOURCE_ID) {
@@ -107,5 +114,5 @@ function ResourceModule() {
 
     init();
 
-    return { load };
+    return { is_ready, load };
 }

@@ -1,6 +1,7 @@
 local ____lualib = require("lualib_bundle")
 local __TS__Delete = ____lualib.__TS__Delete
 local __TS__ArraySplice = ____lualib.__TS__ArraySplice
+local __TS__ObjectKeys = ____lualib.__TS__ObjectKeys
 local ____exports = {}
 local EventBusModule
 local event = require("event.event")
@@ -76,7 +77,7 @@ function EventBusModule()
         local key_message = ensure_hash(id_message)
         if not listeners[key_message] then
             bus_log.warn(("Ни один слушатель для события не зарегистрирован: " .. id_message) .. ", off")
-            return
+            return false
         end
         local list = listeners[key_message]
         do
@@ -88,16 +89,22 @@ function EventBusModule()
                         events[key_message]:unsubscribe(callback)
                     end
                     __TS__ArraySplice(list, i, 1)
-                    return
+                    if #list == 0 then
+                        __TS__Delete(listeners, key_message)
+                        if events[key_message]:is_empty() then
+                            __TS__Delete(events, key_message)
+                        end
+                    end
+                    return true
                 end
                 i = i - 1
             end
         end
+        return false
     end
     local function off_all_id_message(id_message)
         local key_message = ensure_hash(id_message)
         if not listeners[key_message] then
-            bus_log.warn(("Ни один слушатель для события не зарегистрирован: " .. id_message) .. ", off_all_id_message")
             return
         end
         if events[key_message] then
@@ -118,6 +125,12 @@ function EventBusModule()
                             events[key_message]:unsubscribe(l.callback)
                         end
                         __TS__ArraySplice(listener, i, 1)
+                        if #listener == 0 then
+                            __TS__Delete(listeners, key_message)
+                            if events[key_message]:is_empty() then
+                                __TS__Delete(events, key_message)
+                            end
+                        end
                     end
                     i = i - 1
                 end
@@ -137,6 +150,12 @@ function EventBusModule()
                             events[key_message]:unsubscribe(l.callback)
                         end
                         __TS__ArraySplice(listener, i, 1)
+                        if #listener == 0 then
+                            __TS__Delete(listeners, key_message)
+                            if events[key_message]:is_empty() then
+                                __TS__Delete(events, key_message)
+                            end
+                        end
                     end
                     i = i - 1
                 end
@@ -215,6 +234,16 @@ function EventBusModule()
             update_cache()
         end
     end
+    local function ____debug()
+        log(
+            "EventBus listeners",
+            #__TS__ObjectKeys(listeners)
+        )
+        log(
+            "EventBus events",
+            #__TS__ObjectKeys(events)
+        )
+    end
     return {
         on = on,
         once = once,
@@ -224,7 +253,8 @@ function EventBusModule()
         off_all_current_script = off_all_current_script,
         on_message = on_message,
         send = send,
-        trigger = trigger
+        trigger = trigger,
+        debug = ____debug
     }
 end
 function ____exports.register_event_bus()

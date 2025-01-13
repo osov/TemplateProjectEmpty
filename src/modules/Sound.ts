@@ -38,6 +38,18 @@ function SoundModule() {
             const message = _message as Messages['SYS_PLAY_SND'];
             sound.play('/sounds#' + message.name, { speed: message.speed, gain: message.volume });
         }
+
+        if (message_id == to_hash('SYS_LOAD_SND')) {
+            const message = _message as Messages['SYS_LOAD_SND'];
+            const [sound_data, error] = sys.load_resource(message.path);
+            if (error != null) {
+                Log.log('SYS_LOAD_SND', error);
+                return;
+            }
+            const sound_path = go.get(Manager.MAIN + 'sounds#' + message.name, "sound") as string;
+            resource.set_sound(sound_path, sound_data);
+            EventBus.trigger('SYS_SOUND_LOADED_' + message.name + '_' + message.path as any, null, false);
+        }
     }
 
     function is_active() {
@@ -47,6 +59,12 @@ function SoundModule() {
     function set_active(active: boolean) {
         Storage.set('is_sound', active);
         sound.set_group_gain('master', active ? 1 : 0);
+    }
+
+    function load(name: string, path: string, on_loaded?: () => void) {
+        if (on_loaded != undefined)
+            EventBus.once('SYS_SOUND_LOADED_' + name + '_' + path as any, on_loaded);
+        Manager.send('SYS_LOAD_SND', { name, path });
     }
 
     function play(name: string, speed = 1, volume = 1) {
@@ -66,8 +84,11 @@ function SoundModule() {
         sound.set_group_gain('master', val ? 0 : 1);
     }
 
+    // todo groups sound
+    
+
 
     init();
 
-    return { _on_message, is_active, set_active, play, stop, set_pause, attach_druid_click };
+    return { _on_message, is_active, set_active, load, play, stop, set_pause, attach_druid_click };
 }

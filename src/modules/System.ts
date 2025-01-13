@@ -48,6 +48,15 @@ function SystemModule() {
         return socket.gettime();
     }
 
+    function is_mobile_html() {
+        if (platform == 'HTML5')
+            return html5.run('(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))') == 'true';
+        else if (platform == 'iPhone OS' || platform == 'Android')
+            return true;
+        else
+            return false;
+    }
+
     init();
-    return { platform, now };
+    return { platform,is_mobile_html, now };
 }

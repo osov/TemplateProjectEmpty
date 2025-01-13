@@ -40,8 +40,17 @@ function SystemModule()
     local function now()
         return socket.gettime()
     end
+    local function is_mobile_html()
+        if platform == "HTML5" then
+            return html5.run("(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))") == "true"
+        elseif platform == "iPhone OS" or platform == "Android" then
+            return true
+        else
+            return false
+        end
+    end
     init()
-    return {platform = platform, now = now}
+    return {platform = platform, is_mobile_html = is_mobile_html, now = now}
 end
 function ____exports.register_system()
     _G.System = SystemModule()

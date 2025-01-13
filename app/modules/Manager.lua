@@ -30,16 +30,22 @@ local ____Camera = require("modules.Camera")
 local register_camera = ____Camera.register_camera
 local ____HtmlBridge = require("modules.HtmlBridge")
 local register_html_bridge = ____HtmlBridge.register_html_bridge
+local ____Resource = require("modules.Resource")
+local register_resources = ____Resource.register_resources
+local ____Popup = require("modules.Popup")
+local register_popup = ____Popup.register_popup
 function ManagerModule()
     local register_modules, check_ready, send_raw, send, _is_ready, MANAGER_ID
     function register_modules(callback_ready)
         register_metrica()
         register_sound()
         register_lang()
+        register_resources()
         register_scene()
         register_camera()
         register_ads()
         register_rate()
+        register_popup()
         Metrica.init(ID_YANDEX_METRICA)
         check_ready(callback_ready)
     end
@@ -49,7 +55,7 @@ function ManagerModule()
             0.1,
             true,
             function()
-                if Ads.is_ready() then
+                if Ads.is_ready() and Resource.is_ready() then
                     timer.cancel(id_timer)
                     _is_ready = true
                     log("All Managers ready ver: " .. sys.get_config("project.version"))
@@ -74,7 +80,8 @@ function ManagerModule()
         send_raw(message_id, message_data, receiver)
     end
     _is_ready = false
-    MANAGER_ID = "main:/manager"
+    local MAIN = "main:/"
+    MANAGER_ID = MAIN .. "manager"
     local UI_ID = "/ui#game"
     local LOGIC_ID = "/game_logic#game"
     local VIEW_ID = "/game_view#view"
@@ -133,6 +140,7 @@ function ManagerModule()
     end
     local function on_message_main(_this, message_id, message, sender)
         if _is_ready then
+            Resource._on_message(_this, message_id, message, sender)
             Scene._on_message(_this, message_id, message, sender)
             Sound._on_message(_this, message_id, message, sender)
             Rate._on_message(_this, message_id, message, sender)
@@ -162,6 +170,7 @@ function ManagerModule()
         send_view = send_view,
         send_raw_view = send_raw_view,
         send_raw_ui = send_raw_ui,
+        MAIN = MAIN,
         MANAGER_ID = MANAGER_ID,
         UI_ID = UI_ID,
         LOGIC_ID = LOGIC_ID,

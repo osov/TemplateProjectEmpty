@@ -1,7 +1,7 @@
 local ____exports = {}
 local CameraModule
 function CameraModule()
-    local get_zoom, set_zoom, update_window_size, get_width_height, width_viewport, width_projection, get_viewport, unproject_xyz, unproject, screen_to_world, project, update_auto_zoom, v4_tmp, DISPLAY_WIDTH, DISPLAY_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, _view_matrix, anchor_x, anchor_y, _near, _far, _zoom, is_auto_zoom, _dynamic_orientation, GUI_ADJUST
+    local get_zoom, set_zoom, update_window_size, get_width_height, width_viewport, width_projection, get_viewport, unproject_xyz, unproject, screen_to_world, project, update_auto_zoom, v4_tmp, DISPLAY_WIDTH, DISPLAY_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, _view_matrix, anchor_x, anchor_y, _near, _far, _zoom, is_auto_zoom, _dynamic_orientation, _zoom_width, _zoom_height, GUI_ADJUST
     function get_zoom()
         return _zoom
     end
@@ -142,7 +142,14 @@ function CameraModule()
         return world
     end
     function update_auto_zoom(width, height)
-        local dw, dh = unpack(get_width_height())
+        local dw = 0
+        local dh = 0
+        if _zoom_width > 0 and _zoom_height > 0 then
+            dw = _zoom_width
+            dh = _zoom_height
+        else
+            dw, dh = unpack(get_width_height())
+        end
         if not is_auto_zoom then
             return
         end
@@ -171,21 +178,24 @@ function CameraModule()
     _zoom = 1
     is_auto_zoom = false
     _dynamic_orientation = false
+    _zoom_width = 0
+    _zoom_height = 0
     local function init()
         update_window_size()
         local last_window_x = 0
         local last_window_y = 0
-        window.set_listener(function(____self, event)
-            if event ~= window.WINDOW_EVENT_RESIZED then
-                return
+        timer.delay(
+            0.1,
+            true,
+            function()
+                local window_x, window_y = window.get_size()
+                if last_window_x ~= window_x or last_window_y ~= window_y then
+                    last_window_x = window_x
+                    last_window_y = window_y
+                    update_window_size()
+                end
             end
-            local window_x, window_y = window.get_size()
-            if last_window_x ~= window_x or last_window_y ~= window_y then
-                last_window_x = window_x
-                last_window_y = window_y
-                update_window_size()
-            end
-        end)
+        )
     end
     local function set_gui_projection(value)
         is_gui_projection = value
@@ -193,6 +203,8 @@ function CameraModule()
     end
     local function transform_input_action(action)
         if is_gui_projection and action.x ~= nil then
+            action.orig_x = action.x
+            action.orig_y = action.y
             local tp = screen_to_world(action.x, action.y)
             local window_x, window_y = window.get_size()
             local stretch_x = window_x / gui.get_width()
@@ -275,8 +287,17 @@ function CameraModule()
         local tl_x, tl_y = unpack(unproject_xyz(inv, 0, win_space and WINDOW_HEIGHT or DISPLAY_HEIGHT, 0))
         return vmath.vector4(bl_x, tl_y, br_x, bl_y)
     end
-    local function set_auto_zoom(active)
+    local function set_auto_zoom(active, zoom_width, zoom_height)
+        if zoom_width == nil then
+            zoom_width = 0
+        end
+        if zoom_height == nil then
+            zoom_height = 0
+        end
         is_auto_zoom = active
+        _zoom_width = zoom_width
+        _zoom_height = zoom_height
+        update_window_size(false)
     end
     local function set_dynamic_orientation(active)
         _dynamic_orientation = active

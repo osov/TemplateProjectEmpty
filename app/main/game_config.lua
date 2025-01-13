@@ -6,6 +6,7 @@ ____exports.IS_HUAWEI = sys.get_sys_info().system_name == "Android" and __TS__St
     sys.get_config("android.package"),
     "huawei"
 )
+____exports.SERVER_URL = "./"
 ____exports.ADS_CONFIG = {
     is_mediation = false,
     id_banners = {},
@@ -21,5 +22,5 @@ ____exports.ID_YANDEX_METRICA = ""
 ____exports.RATE_FIRST_SHOW = 24 * 60 * 60
 ____exports.RATE_SECOND_SHOW = 3 * 24 * 60 * 60
 ____exports._GAME_CONFIG = {}
-____exports._STORAGE_CONFIG = {}
+____exports._STORAGE_CONFIG = {resource_manifest = {}}
 return ____exports

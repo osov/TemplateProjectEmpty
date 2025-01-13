@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { BannerPos } from "./Ads";
@@ -23,14 +24,19 @@ export interface HashesMessage extends VoidMessage { hashes: hash[] }
 export interface ItemMessage extends VoidMessage { item: IGameItem }
 export interface AdsResult { result: boolean }
 export interface ShowBannerData { pos: BannerPos }
+export interface ResourceMessage extends NameMessage { path: string; }
 
 export type _SystemMessages = {
     MANAGER_READY: VoidMessage,
     SYS_PLAY_SND: SndMessage,
     SYS_STOP_SND: NameMessage,
+    SYS_LOAD_SND:{name:string,path:string},
+    ON_SOUND_LOADED: NameMessage,
     ON_SOUND_PAUSE: ValMessage,
     SYS_LOAD_SCENE: NameMessage,
+    SYS_UNLOAD_SCENE: NameMessage,
     SYS_RESTART_SCENE: VoidMessage,
+    SYS_LOAD_RESOURCE: ResourceMessage,
     SYS_SHOW_RATE: VoidMessage,
     ON_APPLY_CUSTOM_LANG: VoidMessage,
     ON_SCENE_LOADED: NameMessage,

@@ -314,6 +314,7 @@ function CameraModule() {
         is_auto_zoom = active;
         _zoom_width = zoom_width;
         _zoom_height = zoom_height;
+        update_window_size(false);
     }
 
     function set_dynamic_orientation(active: boolean) {

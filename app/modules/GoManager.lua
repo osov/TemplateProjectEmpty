@@ -207,14 +207,28 @@ function ____exports.GoManager()
     game_items = {}
     local index = 0
     local index2GameItem = {}
-    local function make_go(name, pos, is_add_list)
-        if name == nil then
-            name = "cell"
+    local function set_factory_prefab(factory_name, resource_path, on_loaded)
+        if factory_name == nil then
+            factory_name = "factory"
+        end
+        if resource_path == nil then
+            resource_path = "assets/empty.goc"
+        end
+        if on_loaded == nil then
+            on_loaded = function()
+            end
+        end
+        factory.set_prototype("#" .. factory_name, resource_path)
+        factory.load("#" .. factory_name, on_loaded)
+    end
+    local function make_go(factory_name, pos, is_add_list)
+        if factory_name == nil then
+            factory_name = "factory"
         end
         if is_add_list == nil then
             is_add_list = false
         end
-        local item = factory.create("/prefabs#" .. name, pos)
+        local item = factory.create("#" .. factory_name, pos)
         if is_add_list then
             go_list[#go_list + 1] = item
         end
@@ -431,26 +445,32 @@ function ____exports.GoManager()
         )
     end
     local tmp_items = {}
-    local function draw_debug_intersect(name_prefab)
-        if name_prefab == nil then
-            name_prefab = "x"
+    local function draw_debug_intersect(debug_resource)
+        if debug_resource == nil then
+            debug_resource = "assets/x.goc"
         end
-        local a, b, c, d = unpack(get_debug_intersect_points())
-        do
-            local j = 0
-            while j < #tmp_items do
-                local it = tmp_items[j + 1]
-                go.delete(it)
-                j = j + 1
+        set_factory_prefab(
+            "factory",
+            debug_resource,
+            function()
+                local a, b, c, d = unpack(get_debug_intersect_points())
+                do
+                    local j = 0
+                    while j < #tmp_items do
+                        local it = tmp_items[j + 1]
+                        go.delete(it)
+                        j = j + 1
+                    end
+                end
+                tmp_items = {}
+                __TS__ArrayPush(
+                    tmp_items,
+                    make_go("factory", a),
+                    make_go("factory", b),
+                    make_go("factory", c),
+                    make_go("factory", d)
+                )
             end
-        end
-        tmp_items = {}
-        __TS__ArrayPush(
-            tmp_items,
-            make_go(name_prefab, a),
-            make_go(name_prefab, b),
-            make_go(name_prefab, c),
-            make_go(name_prefab, d)
         )
     end
     local function on_click(x, y, isDown, isMove)
@@ -630,6 +650,7 @@ function ____exports.GoManager()
     return {
         do_message = do_message,
         on_click = on_click,
+        set_factory_prefab = set_factory_prefab,
         make_go = make_go,
         set_render_order = set_render_order,
         get_render_order = get_render_order,

@@ -40,6 +40,7 @@ export function init(this: props) {
             HtmlBridge.game_ready();
         Scene.load('menu');
         Scene.set_bg('#999');
+        
     }, true);
 }
 

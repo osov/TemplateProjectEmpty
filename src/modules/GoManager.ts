@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -21,15 +22,19 @@ interface DragData {
 type CallbackFunction = () => void;
 
 export function GoManager() {
-
     let go_list: hash[] = [];
     let game_items: IGameItem[] = [];
 
     let index = 0;
     let index2GameItem: { [key in number]: IGameItem } = {};
 
-    function make_go(name = 'cell', pos: vmath.vector3, is_add_list = false) {
-        const item = factory.create("/prefabs#" + name, pos);
+    function set_factory_prefab(factory_name = 'factory', resource_path = "assets/empty.goc", on_loaded = () => { }) {
+        factory.set_prototype("#" + factory_name, resource_path);
+        factory.load("#" + factory_name, on_loaded);
+    }
+
+    function make_go(factory_name = 'factory', pos: vmath.vector3, is_add_list = false) {
+        const item = factory.create("#" + factory_name, pos);
         if (is_add_list)
             go_list.push(item);
         return item;
@@ -166,15 +171,16 @@ export function GoManager() {
 
     // debug info
     let tmp_items: hash[] = [];
-    function draw_debug_intersect(name_prefab = 'x') {
-        const [a, b, c, d] = get_debug_intersect_points();
-        for (let j = 0; j < tmp_items.length; j++) {
-            const it = tmp_items[j];
-            go.delete(it);
-        }
-        tmp_items = [];
-        tmp_items.push(make_go(name_prefab, a), make_go(name_prefab, b), make_go(name_prefab, c), make_go(name_prefab, d));
-
+    function draw_debug_intersect(debug_resource = 'assets/x.goc') {
+        set_factory_prefab('factory', debug_resource, () => {
+            const [a, b, c, d] = get_debug_intersect_points();
+            for (let j = 0; j < tmp_items.length; j++) {
+                const it = tmp_items[j];
+                go.delete(it);
+            }
+            tmp_items = [];
+            tmp_items.push(make_go('factory', a), make_go('factory', b), make_go('factory', c), make_go('factory', d));
+        });
     }
 
     function is_intersect(pos: vmath.vector3, item: IGameItem, inner_offset?: vmath.vector3) {
@@ -431,7 +437,7 @@ export function GoManager() {
 
 
     return {
-        do_message, on_click, make_go, set_render_order, get_render_order, do_move_anim, do_scale_anim, do_fade_anim, do_move_anim_hash, do_fade_anim_hash, do_scale_anim_hash,
+        do_message, on_click, set_factory_prefab, make_go, set_render_order, get_render_order, do_move_anim, do_scale_anim, do_fade_anim, do_move_anim_hash, do_fade_anim_hash, do_scale_anim_hash,
         get_item_by_go, get_go_by_item, clear_and_remove_items, get_item_by_index, set_sprite_hash, set_color_hash, set_rotation_hash, add_game_item,
         move_to_with_speed_hash, move_to_with_speed, set_position_xy, set_position_xy_hash, is_intersect, is_intersect_hash, delete_item, delete_go, draw_debug_intersect, set_render_order_hash, get_render_order_hash,
         move_to_with_time_hash, get_sprite_hash, start_dragging_list, stop_all_dragging, stop_dragging_list, reset_dragging_list,

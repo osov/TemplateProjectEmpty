@@ -1,0 +1,9 @@
+{
+    "graph_path": "./app/build/default/game.graph.json",
+    "build_path": "./build",
+    "resources": [
+        "/game/game.collectionc",
+        "/new_f/new_f.collectionc",
+        "/assets/resources/home/home.collectionc"
+    ]
+}

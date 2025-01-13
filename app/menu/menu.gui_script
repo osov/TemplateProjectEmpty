@@ -62,6 +62,7 @@ function ____exports.init(self)
             )
         end
     end
+    Scene.load("game", false)
 end
 function ____exports.on_input(self, action_id, action)
     return self.druid:on_input(action_id, action)

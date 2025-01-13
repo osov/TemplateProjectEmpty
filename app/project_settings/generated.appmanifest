@@ -1,93 +1,98 @@
 platforms:
     armv7-ios:
         context:
-            excludeLibs: [record, vpx, liveupdate, profilerext, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model, gamesys_rig, rig]
+            excludeLibs: [record, vpx, profilerext, gamesys_rig, rig, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model]
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
             symbols: []
-            libs: [physics_null, record_null, liveupdate_null, profilerext_null, gamesys_rig_null, gamesys_model_null, rig_null]
+            libs: [physics_null, record_null, profilerext_null, gamesys_rig_null, rig_null, gamesys_model_null]
             frameworks: []
             linkFlags: []
     arm64-ios:
         context:
-            excludeLibs: [record, vpx, liveupdate, profilerext, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model, gamesys_rig, rig]
+            excludeLibs: [record, vpx, profilerext, gamesys_rig, rig, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model]
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
             symbols: []
-            libs: [physics_null, record_null, liveupdate_null, profilerext_null, gamesys_rig_null, gamesys_model_null, rig_null]
+            libs: [physics_null, record_null, profilerext_null, gamesys_rig_null, rig_null, gamesys_model_null]
             frameworks: []
             linkFlags: []
     x86_64-ios:
         context:
-            excludeLibs: [record, vpx, liveupdate, profilerext, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model, gamesys_rig, rig]
+            excludeLibs: [record, vpx, profilerext, gamesys_rig, rig, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model]
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
             symbols: []
-            libs: [physics_null, record_null, liveupdate_null, profilerext_null, gamesys_rig_null, gamesys_model_null, rig_null]
+            libs: [physics_null, record_null, profilerext_null, gamesys_rig_null, rig_null, gamesys_model_null]
             frameworks: []
             linkFlags: []
     armv7-android:
         context:
-            excludeLibs: [record, vpx, liveupdate, profilerext, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model, gamesys_rig, rig]
+            excludeLibs: [record, vpx, profilerext, gamesys_rig, rig, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model]
             excludeJars: []
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
             symbols: []
-            libs: [physics_null, record_null, liveupdate_null, profilerext_null, gamesys_rig_null, gamesys_model_null, rig_null]
+            libs: [physics_null, record_null, profilerext_null, gamesys_rig_null, rig_null, gamesys_model_null]
             linkFlags: []
             jetifier: true
     arm64-android:
         context:
-            excludeLibs: [record, vpx, liveupdate, profilerext, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model, gamesys_rig, rig]
+            excludeLibs: [record, vpx, profilerext, gamesys_rig, rig, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model]
             excludeJars: []
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
             symbols: []
-            libs: [physics_null, record_null, liveupdate_null, profilerext_null, gamesys_rig_null, gamesys_model_null, rig_null]
+            libs: [physics_null, record_null, profilerext_null, gamesys_rig_null, rig_null, gamesys_model_null]
             linkFlags: []
             jetifier: true
     arm64-osx:
         context:
-            excludeLibs: [record, vpx, profilerext, liveupdate, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model, gamesys_rig, rig]
+            excludeLibs: [record, vpx, profilerext, gamesys_rig, rig, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model]
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
-            libs: [physics_null, record_null, profilerext_null, liveupdate_null, gamesys_rig_null, gamesys_model_null, rig_null]
+            libs: [physics_null, record_null, profilerext_null, gamesys_rig_null, rig_null, gamesys_model_null]
     x86_64-osx:
         context:
-            excludeLibs: [record, vpx, liveupdate, profilerext, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model, gamesys_rig, rig]
+            excludeLibs: [record, vpx, profilerext, gamesys_rig, rig, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model]
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
             symbols: []
-            libs: [physics_null, record_null, liveupdate_null, profilerext_null, gamesys_rig_null, gamesys_model_null, rig_null]
+            libs: [physics_null, record_null, profilerext_null, gamesys_rig_null, rig_null, gamesys_model_null]
             frameworks: []
             linkFlags: []
     x86_64-linux:
         context:
-            excludeLibs: [record, vpx, liveupdate, profilerext, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model, gamesys_rig, rig]
+            excludeLibs: [record, vpx, profilerext, gamesys_rig, rig, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model]
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
             symbols: []
-            libs: [physics_null, record_null, liveupdate_null, profilerext_null, gamesys_rig_null, gamesys_model_null, rig_null]
+            libs: [physics_null, record_null, profilerext_null, gamesys_rig_null, rig_null, gamesys_model_null]
             linkFlags: []
+    arm64-linux:
+        context:
+            excludeLibs: [physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model, gamesys_rig, rig, record, vpx, profilerext]
+            excludeSymbols: [ScriptBox2DExt, ScriptModelExt, ProfilerExt]
+            libs: [physics_null, gamesys_rig_null, gamesys_model_null, rig_null, record_null, profilerext_null]
     x86-win32:
         context:
-            excludeLibs: [librecord, vpx, libliveupdate, libprofilerext, libphysics, libLinearMath, libBulletDynamics, libBulletCollision, libBox2D, libscript_box2d, libgamesys_model, libgamesys_rig, librig]
+            excludeLibs: [librecord, vpx, libprofilerext, libgamesys_rig, librig, libphysics, libLinearMath, libBulletDynamics, libBulletCollision, libBox2D, libscript_box2d, libgamesys_model]
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
             symbols: []
-            libs: [libphysics_null.lib, librecord_null.lib, libliveupdate_null.lib, libprofilerext_null.lib, libgamesys_rig_null.lib, libgamesys_model_null.lib, librig_null.lib]
+            libs: [libphysics_null.lib, librecord_null.lib, libprofilerext_null.lib, libgamesys_rig_null.lib, librig_null.lib, libgamesys_model_null.lib]
             linkFlags: []
     x86_64-win32:
         context:
-            excludeLibs: [librecord, vpx, libliveupdate, libprofilerext, libphysics, libLinearMath, libBulletDynamics, libBulletCollision, libBox2D, libscript_box2d, libgamesys_model, libgamesys_rig, librig]
+            excludeLibs: [librecord, vpx, libprofilerext, libgamesys_rig, librig, libphysics, libLinearMath, libBulletDynamics, libBulletCollision, libBox2D, libscript_box2d, libgamesys_model]
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
             symbols: []
-            libs: [libphysics_null.lib, librecord_null.lib, libliveupdate_null.lib, libprofilerext_null.lib, libgamesys_rig_null.lib, libgamesys_model_null.lib, librig_null.lib]
+            libs: [libphysics_null.lib, librecord_null.lib, libprofilerext_null.lib, libgamesys_rig_null.lib, librig_null.lib, libgamesys_model_null.lib]
             linkFlags: []
     js-web:
         context:
-            excludeLibs: [record, vpx, liveupdate, profilerext, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model, gamesys_rig, rig]
+            excludeLibs: [record, vpx, profilerext, gamesys_rig, rig, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model]
             excludeJsLibs: []
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
             symbols: []
-            libs: [physics_null, record_null, liveupdate_null, profilerext_null, gamesys_rig_null, gamesys_model_null, rig_null]
+            libs: [physics_null, record_null, profilerext_null, gamesys_rig_null, rig_null, gamesys_model_null]
             linkFlags: []
     wasm-web:
         context:
-            excludeLibs: [record, vpx, liveupdate, profilerext, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model, gamesys_rig, rig]
+            excludeLibs: [record, vpx, profilerext, gamesys_rig, rig, physics, LinearMath, BulletDynamics, BulletCollision, Box2D, script_box2d, gamesys_model]
             excludeJsLibs: []
             excludeSymbols: [ProfilerExt, ScriptBox2DExt, ScriptModelExt]
             symbols: []
-            libs: [physics_null, record_null, liveupdate_null, profilerext_null, gamesys_rig_null, gamesys_model_null, rig_null]
+            libs: [physics_null, record_null, profilerext_null, gamesys_rig_null, rig_null, gamesys_model_null]
             linkFlags: []

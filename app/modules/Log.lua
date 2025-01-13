@@ -28,7 +28,7 @@ function log_worker()
         end
         print(str)
         if System.platform == "HTML5" then
-            html5.run(("console.log(" .. json.encode(str)) .. ")")
+            html5.run(((("console." .. level) .. "(") .. json.encode(str)) .. ")")
         end
     end
     return {show = show}
@@ -38,11 +38,11 @@ function LogModule(_prefix, _log_level)
         _prefix = ""
     end
     if _log_level == nil then
-        _log_level = "notice"
+        _log_level = "log"
     end
     local function get_with_prefix(prefix, log_level)
         if log_level == nil then
-            log_level = "notice"
+            log_level = "log"
         end
         return LogModule(prefix, log_level)
     end
@@ -61,10 +61,6 @@ function LogModule(_prefix, _log_level)
         end
         worker.show(_prefix, level, _log_level, str)
     end
-    local function notice(...)
-        local _args = {...}
-        send("notice", _args)
-    end
     local function log(...)
         local _args = {...}
         send("log", _args)
@@ -77,13 +73,7 @@ function LogModule(_prefix, _log_level)
         local _args = {...}
         send("error", _args)
     end
-    return {
-        get_with_prefix = get_with_prefix,
-        notice = notice,
-        log = log,
-        warn = warn,
-        error = ____error
-    }
+    return {get_with_prefix = get_with_prefix, log = log, warn = warn, error = ____error}
 end
 function LogScreenModule()
     local function log(...)
@@ -122,13 +112,7 @@ function ____exports.register_log()
     _G.log = Log.log
     _G.LogScreen = LogScreenModule()
 end
-log_priority = {
-    "notice",
-    "log",
-    "info",
-    "warn",
-    "error"
-}
+log_priority = {"log", "info", "warn", "error"}
 worker = log_worker()
 screen_text = ""
 screen_color = hex2rgba("#f00")

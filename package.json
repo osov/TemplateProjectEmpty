@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "dev": "tstl --watch"
+    "dev": "tstl --watch",
+    "pack_live":"node pack_resources.js run",
+    "pack_live2":"node pack_resources.js run \"D:/Defold/projects/builds/wasm-web/Шаблон проекта пустой\""
   },
   "devDependencies": {
     "@ts-defold/library": "latest",
@@ -12,6 +14,9 @@
     "eslint": "^8.28.0",
     "typescript-to-lua": "github:osov/typescript-to-lua",
     "typescript-tstl-plugin": "^0.3.2",
-    "typescript":"^4.9.3"
+    "typescript":"^4.9.3",
+    "archiver": "^7.0.1",
+    "commander": "^12.0.0",
+    "decompress": "^4.2.1"
   }
 }

@@ -1,8 +1,5 @@
-local ____lualib = require("lualib_bundle")
-local __TS__ObjectEntries = ____lualib.__TS__ObjectEntries
 local ____exports = {}
 local ResourceModule
-local reszip = require("liveupdate_reszip.reszip")
 local ____game_config = require("main.game_config")
 local SERVER_URL = ____game_config.SERVER_URL
 function ResourceModule()
@@ -63,62 +60,6 @@ function ResourceModule()
                 on_loaded()
             end
             return
-        end
-        local missing_resources = collectionproxy.missing_resources((path .. "#") .. name)
-        local is_miss = next(missing_resources) ~= nil
-        local is_missing = false
-        for ____, ____value in ipairs(__TS__ObjectEntries(missing_resources)) do
-            local key = ____value[1]
-            local value = ____value[2]
-            if value ~= nil then
-                Log.warn(
-                    (("Не найден ресурс: " .. tostring(key)) .. " ") .. tostring(value),
-                    "в коллекции:",
-                    (path .. "#") .. name,
-                    "is_miss",
-                    is_miss
-                )
-                is_missing = true
-            end
-        end
-        local resource_hash = manifest[name]
-        if resource_hash == nil then
-            if is_missing then
-                Log.error("Не удалось найти хеш ресурса: " .. name)
-            end
-            if on_loaded ~= nil then
-                on_loaded()
-            end
-            return
-        end
-        local miss_match_version = not reszip.version_match(resource_hash, name)
-        if miss_match_version then
-            Log.warn("Не совпадает версия ресурс файла:" .. name)
-            log("resource_hash", resource_hash)
-            log_mounts()
-        end
-        if miss_match_version or is_missing then
-            Log.log("Загрузка ресурсов: " .. name)
-            reszip.load_and_mount_zip(
-                ("resources/" .. resource_hash) .. ".zip",
-                {
-                    filename = resource_hash,
-                    mount_name = name,
-                    delete_old_file = true,
-                    on_finish = function(____self, err)
-                        if not err then
-                            Log.log("Загружены ресурсы: " .. name)
-                            if on_loaded ~= nil then
-                                on_loaded()
-                            end
-                        else
-                            Log.warn("Не удалось загрузить ресурсы: " .. name)
-                        end
-                    end
-                }
-            )
-        elseif on_loaded ~= nil then
-            on_loaded()
         end
     end
     local function _on_message(_this, message_id, _message, sender)

@@ -15,7 +15,7 @@ interface props {
 }
 
 export function init(this: props) {
-    msg.post('.', 'acquire_input_focus');
+    msg.post('/scenes', 'acquire_input_focus');
     register_manager();
     Manager.init(() => {
 
@@ -38,9 +38,10 @@ export function init(this: props) {
         Camera.set_go_prjection(-1, 1);
         if (System.platform == 'HTML5')
             HtmlBridge.game_ready();
+
         Scene.load('menu');
         Scene.set_bg('#999');
-        
+
     }, true);
 }
 

@@ -3,11 +3,12 @@
 
 
 declare namespace collectionproxy {
+    export function get_resources(url: string): any;
     export function missing_resources(url: string): any;
 }
 
 declare namespace factory {
-    export function set_prototype(url: string, path:string): void;
+    export function set_prototype(url: string, path: string): void;
 }
 
 declare interface Mount {

@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 
-import * as reszip from 'liveupdate_reszip.reszip';
+//import * as reszip from 'liveupdate_reszip.reszip';
 import { SERVER_URL } from '../main/game_config';
 import { Messages } from './modules_const';
 
@@ -24,7 +24,7 @@ export function register_resources() {
 
 function ResourceModule() {
     const RESOURCE_ID = Manager.MAIN + 'resources';
-    let manifest: { [key in string]: string } = {};
+    let manifest: { [key in string]: { hash: string, dependencies: string[] } } = {};
     let _is_ready = false;
 
     function init() {
@@ -79,57 +79,66 @@ function ResourceModule() {
             return;
         }
 
-        // не найдены в загруженной коллекции
-        const missing_resources = collectionproxy.missing_resources(path + '#' + name);
-        const is_miss = next(missing_resources)[0] != null;
-        let is_missing = false;
-        for (const [key, value] of Object.entries(missing_resources)) {
-            if (value != null) {
-                Log.warn("Не найден ресурс: " + key + " " + value, 'в коллекции:',path + '#' + name, 'is_miss', is_miss);
-                is_missing = true;
-                //break;
-            }
-        }
-
-        // нет в списке манифеста - либо косяк при упаковке или он там и не должен быть(те уже включен на старте значит все ок)
-        const resource_hash = manifest[name];
-        if (resource_hash == null) {
-            if (is_missing)
-                Log.error("Не удалось найти хеш ресурса: " + name);
-            if (on_loaded != undefined)
-                on_loaded();
-            return;
-        }
-
-
-        const miss_match_version = !reszip.version_match(resource_hash, name);
-        if (miss_match_version) {
-            Log.warn("Не совпадает версия ресурс файла:" + name);
-            log('resource_hash', resource_hash);
-            log_mounts();
-        }
-
-        if (miss_match_version || is_missing) {
-            Log.log("Загрузка ресурсов: " + name);
-
-            reszip.load_and_mount_zip('resources/' + resource_hash + ".zip", {
-                filename: resource_hash,
-                mount_name: name,
-                delete_old_file: true,
-                //priority:21,
-                on_finish: (self: any, err: any) => {
-                    if (!err) {
-                        Log.log("Загружены ресурсы: " + name);
-                        if (on_loaded != undefined)
-                            on_loaded();
+        /*
+                for (const [_, res] of Object.entries(collectionproxy.get_resources(path + '#' + name))) {
+                    Log.log(path + '#' + name + ": ", res);
+                }
+        
+                // не найдены в загруженной коллекции
+                const missing_resources = collectionproxy.missing_resources(path + '#' + name);
+                const is_miss = next(missing_resources)[0] != null;
+                let is_missing = false;
+                for (const [key, value] of Object.entries(missing_resources)) {
+                    if (value != null) {
+                        if (manifest[name].dependencies.includes(value as string)) {
+                            Log.warn("Не найден ресурс: " + key + " " + value, 'в коллекции:', path + '#' + name, 'is_miss', is_miss);
+                            is_missing = true;
+                            //break;
+                        }
                     }
-                    else
-                        Log.warn('Не удалось загрузить ресурсы: ' + name);
-                },
-            });
-        }
-        else if (on_loaded != undefined)
-            on_loaded();
+                }
+        
+                log_mounts();
+        
+                // нет в списке манифеста - либо косяк при упаковке или он там и не должен быть(те уже включен на старте значит все ок)
+                const resource = manifest[name];
+                if (resource == null) {
+                    if (is_missing)
+                        Log.error("Не удалось найти хеш ресурса: " + name);
+                    if (on_loaded != undefined)
+                        on_loaded();
+                    return;
+                }
+        
+        
+                const miss_match_version = !reszip.version_match(resource.hash, name);
+                if (miss_match_version) {
+                    Log.warn("Не совпадает версия ресурс файла:" + name);
+                    log('resource_hash', resource.hash);
+                    log_mounts();
+                }
+        
+                if (miss_match_version || is_missing) {
+                    Log.log("Загрузка ресурсов: " + name);
+        
+                    reszip.load_and_mount_zip('resources/' + resource.hash + ".zip", {
+                        filename: resource.hash,
+                        mount_name: name,
+                        delete_old_file: true,
+                        on_finish: (self: any, err: any) => {
+                            if (!err) {
+                                Log.log("Загружены ресурсы: " + name);
+                                if (on_loaded != undefined)
+                                    on_loaded();
+                            }
+                            else
+                                Log.warn('Не удалось загрузить ресурсы: ' + name);
+                        },
+                    });
+                }
+                else if (on_loaded != undefined)
+                    on_loaded();
+                */
     }
 
     function _on_message(_this: any, message_id: hash, _message: any, sender: hash) {

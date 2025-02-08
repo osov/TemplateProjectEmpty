@@ -7,7 +7,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prefer-const */
 
-import * as flow from 'ludobits.m.flow';
 import { hex2rgba } from '../utils/utils';
 import { get_debug_intersect_points, is_intersect_zone } from '../utils/math_utils';
 import { IGameItem } from './modules_const';
@@ -350,7 +349,6 @@ export function GoManager() {
         }
         game_items = [];
         go_list = [];
-        flow.frames(5);
     }
 
 

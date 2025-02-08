@@ -9,6 +9,7 @@ const path = require('path');
 const decompress = require('decompress');
 const archiver = require('archiver');
 const { Command } = require('commander');
+const sha1 = require('js-sha1');
 
 
 const config_path = "./resources.json";
@@ -67,18 +68,20 @@ function find_resource(resources_graph, resource_path, resources) {
 
 async function loading_resources_from_source_zip(config, resources) {
     const source_zip = await find_source_zip(config);
-    fs.mkdirSync(config.build_path+ '/resources/', { recursive: true });
+    fs.mkdirSync(config.build_path + '/resources/', { recursive: true });
     decompress(source_zip).then((files) => {
         const manifest = {};
         for (const resource of resources) {
+            const dependencies = resource.hexes.slice(1);
+            const hash = sha1.create();
+            for (const hex of dependencies)
+                hash.update(hex);
+            const resource_hash = hash.hex()
 
-            const resource_hash = resource.hexes[0]; // first is hash of collection
             const path = config.build_path + '/resources/' + resource_hash + '.zip';
             const stream = fs.createWriteStream(path);
             const zip = archiver('zip');
             zip.pipe(stream);
-
-
 
             for (const hex of resource.hexes) {
                 for (const file of files) {
@@ -95,7 +98,10 @@ async function loading_resources_from_source_zip(config, resources) {
 
             zip.finalize();
 
-            manifest[resource.name] = resource_hash;
+            manifest[resource.name] = {
+                hash: resource_hash,
+                dependencies
+            };
         }
 
         const data = JSON.stringify(manifest);
@@ -105,24 +111,36 @@ async function loading_resources_from_source_zip(config, resources) {
 }
 
 const getSortedFiles = async (dir) => {
-  const files = await fs.promises.readdir(dir);
+    const files = await fs.promises.readdir(dir);
 
-  return files
-    .map(fileName => ({
-      name: fileName,
-      time: fs.statSync(`${dir}/${fileName}`).mtime.getTime(),
-    }))
-    .sort((a, b) => a.time - b.time)
-    .map(file => file.name);
+    return files
+        .map(fileName => ({
+            name: fileName,
+            time: fs.statSync(`${dir}/${fileName}`).mtime.getTime(),
+        }))
+        .sort((a, b) => a.time - b.time)
+        .map(file => file.name);
 };
 
 
 async function find_source_zip(config) {
-	const p = './app/build/resources/';
-	const files = await getSortedFiles(p);
-	const last_file = files[files.length-1];
-	console.log('file:',last_file);
-	return p + last_file;
+    const p = './app/build/resources/';
+    const files = await getSortedFiles(p);
+    const last_file = files[files.length - 1];
+    console.log('file:', last_file);
+    return p + last_file;
+}
+
+String.prototype.hashCode = function () {
+    var hash = 0,
+        i, chr;
+    if (this.length === 0) return hash;
+    for (i = 0; i < this.length; i++) {
+        chr = this.charCodeAt(i);
+        hash = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
 }
 
 main();

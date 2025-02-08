@@ -5,8 +5,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import * as druid from 'druid.druid';
-import * as checkbox from 'druid.extended.checkbox';
 import { ADS_CONFIG } from '../main/game_config';
+import { DruidCheckbox } from '../utils/DruidCheckbox';
 import { show_gui_list, hide_gui_list, set_text } from '../utils/utils';
 
 interface props {
@@ -15,8 +15,8 @@ interface props {
 
 
 export function init(this: props): void {
+    msg.post('.', 'acquire_input_focus');
     Manager.init_script();
-    druid.register("checkbox", checkbox);
     this.druid = druid.new(this);
 
     if (System.platform == 'iPhone OS') {
@@ -42,7 +42,7 @@ export function init(this: props): void {
             show_gui_list(['gdpr_block']);
             this.druid.new_blocker('gdpr_block');
             this.druid.new_button('gdpr_url', () => sys.open_url(Lang.get_lang() == 'ru' ? 'https://sb-games.ru/policy-ru.html' : 'https://sb-games.ru/policy.html'));
-            this.druid.new_checkbox('gdpr_check_box', (_, val: boolean) => is_checked = val, 'gdrp_is_readed', is_checked);
+            DruidCheckbox(this.druid, 'gdrp_check_bg', (v) => is_checked = v, 'gdpr_check_box', is_checked);
             this.druid.new_button('btnGdprOk', () => {
                 hide_gui_list(['gdpr_block']);
                 Storage.set('gdpr', is_checked ? 1 : 0);
@@ -51,7 +51,6 @@ export function init(this: props): void {
         }
     }
 
-    Scene.load('game', false);
 }
 
 

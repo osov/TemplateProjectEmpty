@@ -4,7 +4,6 @@ local __TS__ArraySplice = ____lualib.__TS__ArraySplice
 local __TS__Delete = ____lualib.__TS__Delete
 local __TS__ObjectEntries = ____lualib.__TS__ObjectEntries
 local ____exports = {}
-local flow = require("ludobits.m.flow")
 local ____utils = require("utils.utils")
 local hex2rgba = ____utils.hex2rgba
 local ____math_utils = require("utils.math_utils")
@@ -573,7 +572,6 @@ function ____exports.GoManager()
         end
         game_items = {}
         go_list = {}
-        flow.frames(5)
     end
     drag_list = {}
     local function start_dragging_list(list, inc_z_index)

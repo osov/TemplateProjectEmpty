@@ -8,7 +8,7 @@ local BannerPos = ____Ads.BannerPos
 local ____Manager = require("modules.Manager")
 local register_manager = ____Manager.register_manager
 function ____exports.init(self)
-    msg.post(".", "acquire_input_focus")
+    msg.post("/scenes", "acquire_input_focus")
     register_manager()
     Manager.init(
         function()

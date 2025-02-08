@@ -26,12 +26,19 @@ app_icon_192x192 = /assets/icons/mipmap-xxxhdpi/ic_launcher.png
 manifest = /project_settings/AndroidManifest.xml
 
 [project]
-title = Template Empty
+title = Шаблон проекта пустой
 bundle_resources = /project_settings/bundle
 version = 1.0
 dependencies#0 = https://github.com/Insality/druid/archive/refs/tags/1.0.zip
-dependencies#1 = https://github.com/osov/defold-js/archive/master.zip
-dependencies#2 = https://github.com/Insality/defold-event/archive/refs/tags/10.zip
+dependencies#1 = https://github.com/defold/extension-review/archive/master.zip
+dependencies#2 = https://github.com/indiesoftby/defold-yametrica/archive/refs/tags/1.0.0.zip
+dependencies#3 = https://github.com/osov/defold-js/archive/master.zip
+dependencies#4 = https://github.com/britzl/defold-sharing/archive/refs/tags/4.5.0.zip
+dependencies#5 = https://github.com/osov/defold-app-metrica/archive/refs/heads/main.zip
+dependencies#6 = https://github.com/osov/defold-yandex-easy-monetization/archive/refs/heads/main.zip
+dependencies#7 = https://github.com/defold/extension-safearea/archive/master.zip
+dependencies#8 = https://github.com/Insality/defold-event/archive/refs/tags/10.zip
+dependencies#9 = https://github.com/indiesoftby/defold-liveupdate-reszip/archive/refs/tags/1.6.0.zip
 
 [native_extension]
 app_manifest = /project_settings/generated.appmanifest
@@ -49,6 +56,23 @@ show_made_with_defold = 0
 show_console_banner = 0
 scale_mode = stretch
 htmlfile = /project_settings/index.html
+
+[yametrica]
+counter_id = 96613723
+
+[collection_proxy]
+max_count = 12
+
+[safearea]
+background_red = 1.0
+background_green = 1.0
+background_blue = 1.0
+resize_game_view = 0
+
+[yandex]
+app_id_ios = ca-app-pub-9966962268328280~8175506869
+app_id_android = ca-app-pub-9966962268328280~8304771906
+applovin_android = MmHLJLwlhhLwuWZiNeyeLte3zfmk4GImmOIOs6U5eCW31mzSvyzXbhJuoTTGhgAmLvAnTNibCSqHrppumwVLAW
 
 [ios]
 app_icon_76x76 = /assets/icons/IOS/76.png

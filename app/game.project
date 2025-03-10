@@ -1,6 +1,6 @@
 [bootstrap]
 main_collection = /main/main.collectionc
-render = /project_settings/render.renderc
+render = /render/render.renderc
 
 [script]
 shared_state = 1
@@ -32,6 +32,7 @@ version = 1.0
 dependencies#0 = https://github.com/Insality/druid/archive/refs/tags/1.0.zip
 dependencies#1 = https://github.com/osov/defold-js/archive/master.zip
 dependencies#2 = https://github.com/Insality/defold-event/archive/refs/tags/10.zip
+dependencies#3 = https://github.com/osov/defold-native-camera/archive/refs/heads/main.zip
 
 [native_extension]
 app_manifest = /project_settings/generated.appmanifest

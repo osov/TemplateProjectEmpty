@@ -1,0 +1,85 @@
+local ____exports = {}
+local IDENTITY_MATRIX = vmath.matrix4()
+local function update_window(____self)
+    ____self.proj_gui = vmath.matrix4_orthographic(
+        0,
+        render.get_window_width(),
+        0,
+        render.get_window_height(),
+        -1,
+        1
+    )
+    ____self.frustum_gui = ____self.proj_gui * IDENTITY_MATRIX
+end
+function ____exports.init(____self)
+    ____self.view = vmath.matrix4()
+    ____self.proj = vmath.matrix4()
+    ____self.frustum = vmath.matrix4()
+    ____self.is_ready = false
+    ____self.use_only_projection = false
+    ____self.tile_pred = render.predicate({"tile"})
+    ____self.gui_pred = render.predicate({"gui"})
+    ____self.text_pred = render.predicate({"text"})
+    ____self.particle_pred = render.predicate({"particle"})
+    ____self.model_pred = render.predicate({"model"})
+    ____self.state_clear = {
+        [render.BUFFER_COLOR_BIT] = vmath.vector4(0, 0, 0, 0),
+        [render.BUFFER_DEPTH_BIT] = 1,
+        [render.BUFFER_STENCIL_BIT] = 0
+    }
+    update_window(____self)
+end
+function ____exports.update(____self)
+    if not ____self.is_ready then
+        return
+    end
+    local window_width = render.get_window_width()
+    local window_height = render.get_window_height()
+    if window_width == 0 or window_height == 0 then
+        return
+    end
+    render.set_depth_mask(true)
+    render.set_stencil_mask(255)
+    render.clear(____self.state_clear)
+    local camera = Camera.go_camera
+    camera:get_view_to_matrix(____self.view)
+    camera:get_proj_to_matrix(____self.proj)
+    camera:get_frustum_to_matrix(____self.frustum)
+    render.set_viewport(0, 0, window_width, window_height)
+    render.set_view(____self.view)
+    render.set_projection(____self.proj)
+    render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
+    render.enable_state(render.STATE_DEPTH_TEST)
+    render.enable_state(render.STATE_STENCIL_TEST)
+    render.enable_state(render.STATE_BLEND)
+    render.draw(____self.tile_pred, {frustum = ____self.frustum})
+    render.draw(____self.particle_pred, {frustum = ____self.frustum})
+    render.disable_state(render.STATE_STENCIL_TEST)
+    render.disable_state(render.STATE_DEPTH_TEST)
+    render.draw_debug3d()
+    local frustum_gui = ____self.frustum
+    if not ____self.use_only_projection then
+        render.set_view(IDENTITY_MATRIX)
+        render.set_projection(____self.proj_gui)
+        frustum_gui = ____self.frustum_gui
+    end
+    render.enable_state(render.STATE_STENCIL_TEST)
+    render.draw(____self.gui_pred, {frustum = frustum_gui})
+    render.draw(____self.text_pred, {frustum = frustum_gui})
+    render.disable_state(render.STATE_STENCIL_TEST)
+end
+function ____exports.on_message(____self, message_id, message)
+    if message_id == to_hash("clear_color") then
+        ____self.state_clear[render.BUFFER_COLOR_BIT] = message.color
+    elseif message_id == to_hash("window_resized") then
+        update_window(____self)
+    elseif message_id == to_hash("MANAGER_READY") then
+        ____self.is_ready = true
+    elseif message_id == hash("use_only_projection") then
+        ____self.use_only_projection = message.value
+    end
+end
+init = ____exports.init
+update = ____exports.update
+on_message = ____exports.on_message
+

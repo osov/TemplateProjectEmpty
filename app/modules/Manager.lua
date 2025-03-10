@@ -60,6 +60,7 @@ function ManagerModule()
                     _is_ready = true
                     log("All Managers ready ver: " .. sys.get_config("project.version"))
                     send("MANAGER_READY")
+                    msg.post("@render:", "MANAGER_READY")
                     if callback_ready then
                         callback_ready()
                     end

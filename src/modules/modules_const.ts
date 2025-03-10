@@ -27,6 +27,8 @@ export interface ShowBannerData { pos: BannerPos }
 export interface ResourceMessage extends NameMessage { path: string; }
 
 export type _SystemMessages = {
+    window_resized:VoidCallback,
+    clear_color:VoidCallback,
     MANAGER_READY: VoidMessage,
     SYS_PLAY_SND: SndMessage,
     SYS_STOP_SND: NameMessage,

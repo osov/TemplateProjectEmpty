@@ -55,11 +55,8 @@ function ResourceModule()
         Manager.send("SYS_LOAD_RESOURCE", {name = name, path = path})
     end
     local function try_load(name, path, on_loaded)
-        if liveupdate == nil then
-            if on_loaded ~= nil then
-                on_loaded()
-            end
-            return
+        if on_loaded ~= nil then
+            on_loaded()
         end
     end
     local function _on_message(_this, message_id, _message, sender)

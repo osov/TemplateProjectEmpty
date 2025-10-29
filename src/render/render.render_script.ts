@@ -75,7 +75,9 @@ export function update(self: Props) {
         render.enable_state(render.STATE_DEPTH_TEST);
         render.set_depth_mask(true);
         render.draw(self.model_pred, { frustum:self.frustum });
-        render.set_depth_mask(false);
+    */
+     render.set_depth_mask(false);
+   /*
         render.disable_state(render.STATE_DEPTH_TEST);
         render.disable_state(render.STATE_CULL_FACE);
     */
